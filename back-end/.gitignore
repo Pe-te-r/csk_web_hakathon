@@ -1,0 +1,47 @@
+# Python-related
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Virtual Environment
+venv/
+.env
+*.env
+
+# Flask instance & migrations (if using Flask-Migrate)
+instance/
+migrations/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Logs & Caches
+logs/
+*.log
+*.pid
+*.seed
+*.bak
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Node.js dependencies (if using frontend with Flask)
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Compiled files (Cython, etc.)
+*.so
+
+# Docker
+*.docker
+docker-compose.override.yml
+
+# OS-specific files
+.DS_Store
+Thumbs.db

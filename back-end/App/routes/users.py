@@ -1,4 +1,4 @@
-from flask import Blueprint,request
+from flask import Blueprint
 from flask_restful import Api,Resource
 from App.Model import User
 
@@ -32,30 +32,10 @@ class UserResource(Resource):
 
 
 
-
 class UsersResource(Resource):
     def get(self):
         return {'message':'List of users'}
-    def post(self):
-        # json data
-        data = request.get_json()
-        # verify fields
-        required_fields = ["email", "first_name", "username", "password"]
-        for field in required_fields:
-            if field not in data:
-                return {'message':f'missing field {field}'},400
-        email = data["email"]
-        if not isinstance(email, str) or "@" not in email:
-            return {"message":"Invalid email format"}
 
-        if 'phone_number' in data:
-            phone_number = data.get("phone_number", "")
-            if phone_number and not phone_number.isdigit():
-                return {"message":"Invalid phone number format"},400
-
-        result=User.create_user(data)
-        print(result)
-        return 201
 
 
 api.add_resource(UsersResource,'/users')

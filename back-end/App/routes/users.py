@@ -9,7 +9,8 @@ class UserResource(Resource):
     def get(self, user_id=None):
         try:
             if user_id:
-                user = User.get_user_by_id(id)
+                user = User.get_user_by_id(user_id)
+                print(user)
                 if not user:
                     return {'message':' user not found'},404
                 
@@ -34,7 +35,11 @@ class UserResource(Resource):
 
 class UsersResource(Resource):
     def get(self):
-        return {'message':'List of users'}
+        users = User.all_users()
+        if not users:
+            return {'message':'no user found'},404
+        
+        return {'message':[user.to_json() for user in users]}
 
 
 

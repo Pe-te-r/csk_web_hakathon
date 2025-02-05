@@ -1,6 +1,12 @@
 import bcrypt
+from enum import Enum as PyEnum
 from uuid import uuid4,UUID
 from App.Model import  db
+
+class Role(PyEnum):
+    ADMIN='admin'
+    BUYER='buyer'
+    SELLER='seller'
 
 
 class User(db.Model):
@@ -10,7 +16,10 @@ class User(db.Model):
     first_name=db.Column(db.String(80),nullable=False)
     username=db.Column(db.String(100),nullable=False,unique=True)
     email=db.Column(db.String(100),nullable=False,unique=True)
+    role=db.Column(db.Enum(Role),default= Role.BUYER,nullable=False)
     active = db.Column(db.Boolean,nullable=False,default=True)
+
+    
 
     # relationship
     password = db.Relationship('Password',backref='user',uselist=False)
@@ -92,18 +101,35 @@ class Category(db.Model):
     # relationship
     subcategory = db.Relationship('SubCategory',back_populates='category',uselist=True)
 
+    def to_json(self):
+        return{
+            'id':str(self.id),
+            'category':self.category
+        }
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
     @classmethod
     def add_category(cls,category):
-        new_category = cls(id=uuid4(),category=category['name'])
+        new_category = cls(id=uuid4(),category=category['category'])
         db.session.add(new_category)
         db.session.commit()
         return True
+    @classmethod
+    def get_category_by_name(cls,name):
+        return cls.query.filter_by(category=name).first()
+    
+    @classmethod
+    def get_by_id(cls,id):
+        return cls.query.filter_by(id=UUID(id)).first()
 # sub category
 class SubCategory(db.Model):
     __tablename__='subcategory'
     id = db.Column(db.UUID,primary_key=True,nullable=False)
     category_id = db.Column(db.UUID,db.ForeignKey('category.id'),nullable=False)
-    sub_category = db.String(db.String(80),unique=True,nullable=False)
+    sub_category = db.Column(db.String(80),unique=True,nullable=False)
 
     # relationship
     category = db.Relationship('Category',back_populates='subcategory',uselist=False)
@@ -120,13 +146,13 @@ class Product(db.Model):
     __tablename__='product'
     id = db.Column(db.UUID,primary_key=True,nullable=False)
     sub_category_id = db.Column(db.UUID,db.ForeignKey('subcategory.id'),nullable=False)
-    product = db.String(db.String(100),nullable=False)
-    img_path=db.String(db.String(130),nullable=False)
-    price = db.String(db.Float,nullable=False,default=0.00)
+    product = db.Column(db.String(100),nullable=False)
+    img_path=db.Column(db.String(130),nullable=False)
+    price = db.Column(db.Float,nullable=False,default=0.00)
     description=db.Column(db.Text,nullable=False)
 
     # relationship
-    subcateory=db.Relationship('SubCategory',back_populates='prooduct',uselist=False)
+    subcategory=db.Relationship('SubCategory',back_populates='product',uselist=False)
 
     @classmethod
     def add_product(cls,product):

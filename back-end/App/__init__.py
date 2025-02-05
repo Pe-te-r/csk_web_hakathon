@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
 from App.Model import db
@@ -12,6 +13,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     Migrate(app,db)
     CORS(app)    
+    JWTManager(app)
     
     from App.routes import register_bp
     register_bp(app)

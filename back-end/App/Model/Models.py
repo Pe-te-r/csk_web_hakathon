@@ -135,12 +135,29 @@ class SubCategory(db.Model):
     category = db.Relationship('Category',back_populates='subcategory',uselist=False)
     product = db.Relationship('Product',back_populates='subcategory',uselist=True)
     
+    def to_json(self):
+        return{
+            'id':str(self.id),
+            'category':self.category.category,
+            'subcategory':self.sub_category
+            }
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
     @classmethod
     def add_subcategory(cls,subcategory):
-        new_subcategory = cls(id=uuid4(),category_id=subcategory['category_id'],sub_category=subcategory['sub_category'])
+        new_subcategory = cls(
+            id=uuid4(),
+            category_id=UUID(subcategory["category_id"]),
+            sub_category=subcategory["subcategory"],
+        )
         db.session.add(new_subcategory)
         db.session.commit()
         return True
+    
+    @classmethod 
+    def get_by_id(cls,id):
+        return cls.query.filter_by(id = UUID(id)).first()
 # product
 class Product(db.Model):
     __tablename__='product'

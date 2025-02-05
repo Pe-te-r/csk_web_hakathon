@@ -72,6 +72,7 @@ class User(db.Model):
 
 # password class
 class Password(db.Model):
+    __tablename__ = 'password'
     user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False,primary_key=True)
     password = db.Column(db.String(200),nullable=False)
 
@@ -80,3 +81,56 @@ class Password(db.Model):
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
         password=cls(user_id=data['id'],password=hashed_password)
         return password
+
+
+# category
+class Category(db.Model):
+    __tablename__ = 'category'
+    id = db.Column(db.UUID,primary_key=True,nullable=False)
+    category = db.Column(db.String(80),unique=True,nullable=False)
+
+    # relationship
+    subcategory = db.Relationship('SubCategory',back_populates='category',uselist=True)
+
+    @classmethod
+    def add_category(cls,category):
+        new_category = cls(id=uuid4(),category=category['name'])
+        db.session.add(new_category)
+        db.session.commit()
+        return True
+# sub category
+class SubCategory(db.Model):
+    __tablename__='subcategory'
+    id = db.Column(db.UUID,primary_key=True,nullable=False)
+    category_id = db.Column(db.UUID,db.ForeignKey('category.id'),nullable=False)
+    sub_category = db.String(db.String(80),unique=True,nullable=False)
+
+    # relationship
+    category = db.Relationship('Category',back_populates='subcategory',uselist=False)
+    product = db.Relationship('Product',back_populates='subcategory',uselist=True)
+    
+    @classmethod
+    def add_subcategory(cls,subcategory):
+        new_subcategory = cls(id=uuid4(),category_id=subcategory['category_id'],sub_category=subcategory['sub_category'])
+        db.session.add(new_subcategory)
+        db.session.commit()
+        return True
+# product
+class Product(db.Model):
+    __tablename__='product'
+    id = db.Column(db.UUID,primary_key=True,nullable=False)
+    sub_category_id = db.Column(db.UUID,db.ForeignKey('subcategory.id'),nullable=False)
+    product = db.String(db.String(100),nullable=False)
+    img_path=db.String(db.String(130),nullable=False)
+    price = db.String(db.Float,nullable=False,default=0.00)
+    description=db.Column(db.Text,nullable=False)
+
+    # relationship
+    subcateory=db.Relationship('SubCategory',back_populates='prooduct',uselist=False)
+
+    @classmethod
+    def add_product(cls,product):
+        new_product =cls(id=uuid4(),sub_category_id=product['sub_category_id'],product=product['product'],img_path=product['img_path'],price=product['price'],description=product['description'])
+        db.session.add(new_product)
+        db.session.commit()
+        return True

@@ -42,33 +42,33 @@ class RegisterResource(Resource):
             # return {"message": "User created successfully"}, 201
 
         except Exception as e:
-            return {"error": f"an error occured {str(e)}"}, 500        
+            return f"an error occured {str(e)}", 500        
     
 
 class LoginResource(Resource):
     def post(self):
         try:
             if not request.is_json:
-                return {"message": "Content-type must be JSON"}, 400
+                return "Content-type must be JSON", 400
             data = request.get_json()
             required_fields = ['email','password']
             for field in required_fields:
                 if field not in data:
-                    return {'message':f'missing field {field}'},400
+                    return f'missing field {field}',400
             
             user = User.get_by_email(data['email'])
             if not user:
-                return {'message':'user not found'},404
+                return 'user not found',404
             if not user.active:
-                return {'message':'user blocked'},403
+                return 'user blocked',403
             
             if not user.correct_password(data['password']):
-                return {'message':'wrong password'},401
+                return 'wrong password',401
             
             return user.to_json(),200
 
         except Exception as e:
-            return {"error": f"an error occured {str(e)}"}, 500        
+            return  f"an error occured {str(e)}", 500        
 
 api.add_resource(RegisterResource,'/register')
 api.add_resource(LoginResource,'/login')

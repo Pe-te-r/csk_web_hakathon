@@ -16,7 +16,7 @@ class Config:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your_jwt_secret_key')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
-    CORS_ALLOW_ORIGINS = ['http://localhost:3000', 'https://myfrontend.com']
+    CORS_ALLOW_ORIGINS = ['http://localhost:5173', 'https://myfrontend.com']
     # SESSION_TYPE = 'redis'
     # SESSION_PERMANENT = True
 

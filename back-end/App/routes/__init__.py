@@ -5,4 +5,4 @@ def register_bp(app):
 
     app.register_blueprint(users_bp, url_prefix="/api")
     app.register_blueprint(products_bp, url_prefix="/api")
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")

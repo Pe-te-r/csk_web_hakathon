@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useRegisterMutation } from "../api/auth";
 import styles from "../styles/RegisterForm.module.scss";
+import Loading from "../components/Loading";
+import { Link } from "react-router-dom";
+
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    first_name: "",
-    email: "",
-    password: "",
-    username: "",
+    first_name: "peter",
+    email: "peter@gmail.com",
+    password: "1234",
+    username: "peter",
   });
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -14,6 +19,10 @@ const RegisterForm: React.FC = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  
+  //   sending data to api
+    const [sendData,{isLoading,isSuccess,error,isError}] = useRegisterMutation()
+    
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,29 +38,33 @@ const RegisterForm: React.FC = () => {
       setErrors(newErrors);
       return;
     }
-
-    // Simulate server-side validation (e.g., username already exists)
-    const usernameExists = await checkUsernameExists(formData.username);
-    if (usernameExists) {
-      setErrors(["Username already exists."]);
-      return;
-    }
-
+      
+      sendData(formData)
     // If no errors, submit the form (simulate API call)
     console.log("Form submitted:", formData);
     setErrors([]);
   };
 
-  // Simulate a server-side check for username existence
-  const checkUsernameExists = async (username: string): Promise<boolean> => {
-    // Replace this with an actual API call
-    const existingUsernames = ["user1", "user2", "user3"];
-    return existingUsernames.includes(username);
-  };
+    
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Registration was success");
+
+        }
+        if (isError) {
+            if (error) {
+                // let errorMessage:string = "An unexpected error occurred."
+                if ("status" in error) {
+                    console.log(error)
+                    const errorMessage:string= error?.data as string
+                    setErrors([errorMessage])
+                }
+            }
+        }
+    },[isError,isSuccess])
 
   return (
     <div className={styles.registerContainer}>
-      {/* Image on the left */}Register
       <div className={styles.imageContainer}>
         <img src="/src/assets/Login.jpeg" alt="Login" className={styles.image} />
       </div>
@@ -120,9 +133,17 @@ const RegisterForm: React.FC = () => {
           )}
 
           {/* Submit Button */}
+                  {
+                      isLoading ?
+                      <Loading/>
+                          :
+                          <>
           <button type="submit" className={styles.submitButton}>
-            Register
-          </button>
+                Register
+                          </button>
+                    <small>Already have an account?? <Link to='/login'>Login</Link></small>
+                           </>
+            }
         </form>
       </div>
     </div>

@@ -106,7 +106,13 @@ class Category(db.Model):
             'id':str(self.id),
             'category':self.category
         }
-
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        return True
+    def update(self,category):
+        self.category=category
+        db.session.commit()
     @classmethod
     def get_all(cls):
         return cls.query.all()
@@ -191,3 +197,7 @@ class Product(db.Model):
     @classmethod
     def get_all(cls):
         return cls.query.all()
+    
+    @classmethod
+    def get_by_id(cls,id):
+        return cls.query.filter_by(id=UUID(id)).first()

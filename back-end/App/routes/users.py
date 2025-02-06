@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api,Resource
+# from flask_jwt_extended import jwt_required
 from App.Model import User
 
 users_bp = Blueprint('users_bp',__name__)
@@ -24,10 +25,15 @@ class UserResource(Resource):
         except Exception as e:
             return {'error':f'an error occured {str(e)}'},500
 
-
     def put(self, user_id):
-        return {"message": f"User {user_id} updated successfully"}
-
+        try:
+            user_exists = User.get_user_by_id(id)
+            if not user_exists:
+                return 'user not found',404
+            
+            return {"message": f"User {user_id} updated successfully"}
+        except Exception as e:
+            return f'error occured {str(e)}',500
     def delete(self, user_id):
         return {"message": f"User {user_id} deleted successfully"}
 

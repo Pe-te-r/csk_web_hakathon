@@ -36,8 +36,13 @@ class MultiProduct(Resource):
 
 class SingleProduct(Resource):
     def get(self,id):
-        pass
-
+        try:
+            product = Product.get_by_id(id)
+            if not product:
+                return 'product not found',404
+            return product.to_json(),200
+        except Exception as e:
+            return f'error occured {str(e)}',500
 
 api.add_resource(MultiProduct,'/product')
 api.add_resource(SingleProduct,'/product/<string:id>')

@@ -1,6 +1,7 @@
 from flask import Blueprint,request
 from flask_restful import Api,Resource
-from flask_jwt_extended import create_access_token
+# from flask_jwt_extended import create_access_token
+from App import jwt
 from App.Model import User
 
 
@@ -66,7 +67,8 @@ class LoginResource(Resource):
             if not user.correct_password(data['password']):
                 return 'wrong password',401
             
-            token = create_access_token(identity=user.email)
+            # token = create_access_token(identity=user.email)
+            token = jwt.create_access_token(user.email)
             
             return {'token':token,'id':str(user.id)},200
 

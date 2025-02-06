@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api,Resource
-# from flask_jwt_extended import jwt_required
+from App import jwt
 from App.Model import User
 
 users_bp = Blueprint('users_bp',__name__)
@@ -40,13 +40,17 @@ class UserResource(Resource):
 
 
 class UsersResource(Resource):
+    method_decorators=[jwt.jwt_required]
     def get(self):
-        users = User.all_users()
-        if not users:
-            return {'message':'no user found'},404
-        
-        return {'message':[user.to_json() for user in users]}
-
+        try:
+            users = User.all_users()
+            if not users:
+                return {'message':'no user found'},404
+            
+            return {'message':[user.to_json() for user in users]}
+        except Exception as e:
+            print(e)
+            return f'error occured {str(e)}',500
 
 
 api.add_resource(UsersResource,'/users')

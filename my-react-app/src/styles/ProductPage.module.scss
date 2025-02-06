@@ -1,0 +1,113 @@
+@use "sass:color";
+$primary-color: #4CAF50;
+$text-color: #333;
+$background-light: #f9f9f9;
+$card-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px;
+
+.productsPage {
+    text-align: center;
+    padding: 20px;
+    background: $background-light;
+    margin-top:20px ;
+    border: 2px dotted;
+    min-height: 100vh;
+
+    h1 {
+        color: $primary-color;
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .searchBar {
+        width: 80%;
+        max-width: 400px;
+        padding: 10px;
+        border: 2px solid $primary-color;
+        border-radius: 5px;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        outline: none;
+
+        &:focus {
+            // border-color: darken($primary-color, 10%);
+            border-color: color.adjust($primary-color, $lightness: -10%);
+        }
+    }
+
+    .productList {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+
+        .noResults {
+            font-size: 1.2rem;
+            color: $text-color;
+        }
+    }
+}
+
+.product-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: $card-shadow;
+    width: 250px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 150px;
+        border-radius: 10px;
+    }
+
+    .product-info {
+        h3 {
+            margin: 10px 0;
+            color: $text-color;
+        }
+
+        .category {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .price {
+                font-weight: bold;
+                color: $primary-color;
+            }
+
+            .buyBtn {
+                background: $primary-color;
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 5px;
+                border: 2px dotted green;
+                cursor: pointer;
+                font-size: 0.9rem;
+                transition: background 0.2s;
+
+                &:hover {
+                    // background: darken($primary-color, 10%);
+                    background: color.adjust($primary-color, $lightness: -10%);                }
+            }
+        }
+    }
+}

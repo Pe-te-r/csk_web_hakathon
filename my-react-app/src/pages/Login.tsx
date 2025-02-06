@@ -54,7 +54,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.imageContainer}>
-        <img src="/src/assets/Login.jpeg" alt="Login" className={styles.image} />
+        <img src="/src/assets/register.jpeg" alt="Login" className={styles.image} />
       </div>
 
       {/* Form on the right */}

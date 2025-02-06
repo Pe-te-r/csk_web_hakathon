@@ -5,6 +5,14 @@
     min-height: 100vh;
     background-color: #f4f4f4;
 }
+.imageContainer{
+    width: 380px;
+    img{
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+}
 
 .formContainer {
     background: #fff;

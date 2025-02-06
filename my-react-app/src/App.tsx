@@ -3,6 +3,7 @@ import Navbar from "./components/NavBar";
 import { Home } from "./pages/Home";
 import Register from "./pages/Register";
 import LoginForm from "./pages/Login";
+import ProductsPage from "./pages/ProductPage";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
           <Route path="/" element={ <Home/>} />
           <Route path="/register" element={ <Register/>} />
           <Route path="/login" element={ <LoginForm/>} />
+          <Route path="/products" element={ <ProductsPage/>} />
         </Routes>
       </div>
     </Router>

@@ -171,9 +171,23 @@ class Product(db.Model):
     # relationship
     subcategory=db.Relationship('SubCategory',back_populates='product',uselist=False)
 
+    def to_json(self):
+        return {
+            'id':str(self.id),
+            'subcategory':self.subcategory.subcategory,
+            'product':self.product,
+            'img_path':self.img_path,
+            'price':self.price,
+            'description':self.description
+        }
+
     @classmethod
     def add_product(cls,product):
-        new_product =cls(id=uuid4(),sub_category_id=product['sub_category_id'],product=product['product'],img_path=product['img_path'],price=product['price'],description=product['description'])
+        new_product =cls(id=uuid4(),sub_category_id=UUID(product['sub_category_id']),product=product['product'],img_path=product['img_path'],price=product['price'],description=product['description'])
         db.session.add(new_product)
         db.session.commit()
         return True
+    
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()

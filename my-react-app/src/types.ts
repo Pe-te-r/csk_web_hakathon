@@ -16,3 +16,18 @@ export interface RegisterErrorResponse {
 }
 
 export type RegisterResponse = RegisterSuccessResponse | RegisterErrorResponse;
+
+export interface UserResponseType{
+        id:string,
+        first_name: string,    
+        email: string,
+        isActive: boolean,
+}
+
+export interface UpdateUserRequest{
+        id:string,
+        first_name?: string,    
+        isActive?: boolean,
+        username?:string
+
+}

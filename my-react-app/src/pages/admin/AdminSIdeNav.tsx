@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import styles from '../../styles/AdminSideNav.module.scss';
-import { FaUser, FaCog, FaHome } from 'react-icons/fa';
+import { FaUser, FaCog, FaHome, FaProductHunt } from 'react-icons/fa';
 
 const AdminSideNav = () => {
   return (
@@ -24,6 +24,14 @@ const AdminSideNav = () => {
           </NavLink>
         </li>
         <li>
+          <NavLink
+            to="/admin/products"
+            className={({ isActive }) => (isActive ? styles.active : '')}
+          >
+            <FaProductHunt /> Product
+          </NavLink>
+        </li>
+    <li>
           <NavLink
             to="/admin/settings"
             className={({ isActive }) => (isActive ? styles.active : '')}

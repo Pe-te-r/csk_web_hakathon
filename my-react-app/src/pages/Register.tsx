@@ -3,18 +3,18 @@ import toast from "react-hot-toast";
 import { useRegisterMutation } from "../api/auth";
 import styles from "../styles/RegisterForm.module.scss";
 import Loading from "../components/Loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    first_name: "peter",
-    email: "peter@gmail.com",
-    password: "1234",
-    username: "peter",
+    first_name: "",
+    email: "",
+    password: "",
+    username: "",
   });
   const [errors, setErrors] = useState<string[]>([]);
-
+  const navigate=useNavigate()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -40,8 +40,6 @@ const RegisterForm: React.FC = () => {
     }
       
       sendData(formData)
-    // If no errors, submit the form (simulate API call)
-    console.log("Form submitted:", formData);
     setErrors([]);
   };
 
@@ -49,13 +47,12 @@ const RegisterForm: React.FC = () => {
     useEffect(() => {
         if (isSuccess) {
             toast.success("Registration was success");
-
+            navigate('/login')
+          
         }
         if (isError) {
             if (error) {
-                // let errorMessage:string = "An unexpected error occurred."
                 if ("status" in error) {
-                    console.log(error)
                     const errorMessage:string= error?.data as string
                     setErrors([errorMessage])
                 }

@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import request, request, Blueprint
 from flask_restful import Api,Resource
 from App import jwt
 from App.Model import User
@@ -7,6 +7,7 @@ users_bp = Blueprint('users_bp',__name__)
 api =Api(users_bp)
 
 class UserResource(Resource):
+    # method_decorators=[jwt.jwt_required]
     def get(self, user_id=None):
         try:
             if user_id:
@@ -27,27 +28,46 @@ class UserResource(Resource):
 
     def put(self, user_id):
         try:
-            user_exists = User.get_user_by_id(id)
-            if not user_exists:
+            user_exists = User.get_user_by_id(user_id)
+            if  not user_exists:
                 return 'user not found',404
             
-            return {"message": f"User {user_id} updated successfully"}
+            data = request.get_json()
+
+            edited=False
+            if "isActive" in data:
+                user_exists.update_user({"active": data["isActive"]})
+                edited=True
+            print('two')
+            if 'username' in data:
+                user_exists.update_user({'username':data['username']})
+                edited=True
+        
+            if 'first_name' in data:
+                user_exists.update_user({'first_name':data['first_name']})
+                edited=True
+            
+            if edited:           
+                return  "User  updated successfully",200
+            
+            return "no data to update",200
+            
         except Exception as e:
             return f'error occured {str(e)}',500
     def delete(self, user_id):
-        return {"message": f"User {user_id} deleted successfully"}
+        return f"User {user_id} deleted successfully"
 
 
 
 class UsersResource(Resource):
-    method_decorators=[jwt.jwt_required]
+    # method_decorators=[jwt.jwt_required]
     def get(self):
         try:
             users = User.all_users()
             if not users:
                 return {'message':'no user found'},404
             
-            return {'message':[user.to_json() for user in users]}
+            return [user.to_json() for user in users],200
         except Exception as e:
             print(e)
             return f'error occured {str(e)}',500

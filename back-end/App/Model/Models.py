@@ -30,9 +30,16 @@ class User(db.Model):
         return{
             'id':str(self.id),
             'first_name':self.first_name,
-            'username':self.username,
+            'isActive':self.active,
             'email':self.email
         }
+
+    def update_user(self, data):
+        for key, value in data.items():
+            if hasattr(self, key): 
+                setattr(self, key, value)
+        
+        db.session.commit()
 
     @classmethod
     def get_user_by_id(cls,id):
@@ -44,7 +51,7 @@ class User(db.Model):
     @classmethod
     def get_by_email(cls,email):
         return cls.query.filter_by(email=email).first()
-    
+
     @classmethod
     def all_users(cls):
         return cls.query.all()

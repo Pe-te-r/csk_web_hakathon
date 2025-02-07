@@ -31,3 +31,8 @@ export interface UpdateUserRequest{
         username?:string
 
 }
+
+export interface CategoryResponseType {
+  id: string,
+  category:string
+}

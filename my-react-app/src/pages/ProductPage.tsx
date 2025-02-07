@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import ProductCard from "../components/ProductCard";
 import styles from "../styles/ProductPage.module.scss";
 
@@ -32,9 +32,11 @@ const fakeProducts = [
 const ProductsPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
 
+
     const filteredProducts = fakeProducts.filter((p) =>
         p.product.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  
 
     return (
         <div className={styles.productsPage}>

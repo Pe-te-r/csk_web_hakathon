@@ -1,0 +1,63 @@
+$sidenav-width: 250px;
+$primary-color: #f9f9f9;
+$secondary-color: #e0e0e0;
+$hover-color: #d4d4d4;
+$active-color: #3498db;
+$text-color: #333;
+
+.sidenav {
+    width: $sidenav-width;
+    height: 100vh;
+    background: $primary-color;
+    padding: 20px;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: all 0.3s ease;
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        color: $text-color;
+        margin-bottom: 20px;
+    }
+
+    .navList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            margin-bottom: 15px;
+
+            a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+                font-size: 1rem;
+                color: $text-color;
+                padding: 10px 15px;
+                border-radius: 8px;
+                transition: background 0.3s ease, color 0.3s ease;
+
+                &:hover {
+                    background: $hover-color;
+                }
+
+                &.active {
+                    background: $active-color;
+                    color: white;
+                }
+
+                svg {
+                    font-size: 1.2rem;
+                }
+            }
+        }
+    }
+}

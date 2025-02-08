@@ -1,6 +1,5 @@
-from flask import request, request, Blueprint
+from flask import request, Blueprint
 from flask_restful import Api,Resource
-from App import jwt
 from App.Model import User
 
 users_bp = Blueprint('users_bp',__name__)

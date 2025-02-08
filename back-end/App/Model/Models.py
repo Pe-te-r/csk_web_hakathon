@@ -108,7 +108,9 @@ class Category(db.Model):
     # relationship
     subcategory = db.Relationship('SubCategory',back_populates='category',uselist=True)
 
-    def to_json(self):
+    def to_json(self, subcategory=False):
+        if subcategory:
+            return {"subcategories": [sub.to_json() for sub in self.subcategory]}
         return{
             'id':str(self.id),
             'category':self.category
@@ -148,12 +150,17 @@ class SubCategory(db.Model):
     category = db.Relationship('Category',back_populates='subcategory',uselist=False)
     product = db.Relationship('Product',back_populates='subcategory',uselist=True)
     
-    def to_json(self):
+    def to_json(self,category=False):
+        if category:
+            return{
+                'id':str(self.id),
+                'category':self.category.category,
+                'subcategory':self.sub_category
+                }
         return{
             'id':str(self.id),
-            'category':self.category.category,
             'subcategory':self.sub_category
-            }
+        }
     @classmethod
     def get_all(cls):
         return cls.query.all()

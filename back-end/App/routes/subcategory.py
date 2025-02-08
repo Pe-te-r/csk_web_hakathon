@@ -20,7 +20,6 @@ class MultiSubCategory(Resource):
             if not request.is_json:
                 return  "Content-type must be JSON", 400
             data = request.get_json()
-            print(data)
 
             required_fields = ["category_id", "subcategory"]
             for field in required_fields:

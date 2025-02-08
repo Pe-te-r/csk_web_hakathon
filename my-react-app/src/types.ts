@@ -36,3 +36,10 @@ export interface CategoryResponseType {
   id: string,
   category:string
 }
+
+export interface CategoryResponseDetailsType{
+  subcategories: {
+    id: string,
+    subcategory:string
+  }[]
+}

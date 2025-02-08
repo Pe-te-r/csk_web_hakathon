@@ -9,10 +9,13 @@ api = Api(category_bp)
 class SingleCategory(Resource):
     def get(self,id):
         try:
+            print('one')
+            subcategory = request.args.get('subcategory')                
             category = Category.get_by_id(id)
             if not category:
                 return 'category not found',404
-            return category.to_json(),200
+            subcategory = True if subcategory =='true' else False
+            return category.to_json(subcategory=subcategory), 200
         except Exception as e:
             return f'error occured {str(e)}' ,500
     

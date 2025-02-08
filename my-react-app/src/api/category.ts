@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "./url";
-import { CategoryResponseType,UpdateUserRequest } from "../types";
+import { CategoryResponseType,UpdateUserRequest ,CategoryResponseDetailsType} from "../types";
 
 
 export const categoryAPi = createApi({
@@ -12,6 +12,12 @@ tagTypes: ["Category"],
         query: () => "/category",
         providesTags: ["Category"], 
     }),
+    getOneCategoryDetails: builder.query<CategoryResponseDetailsType, { id: string; subcategory?: boolean }>({
+        query: ({ id, subcategory=false}) => ({
+            url:`/category/${id}?subcategory=${subcategory}`,
+            providesTags: ["Category"], 
+          })
+      }),
     updateCategory: builder.mutation<string, UpdateUserRequest>({
       query: ({ id, ...updatedData }) => ({
         url: `/category/${id}`,
@@ -23,4 +29,4 @@ tagTypes: ["Category"],
   }),
 });
 
-export const { useGetAllCategoryQuery,useUpdateCategoryMutation } = categoryAPi;
+export const { useGetAllCategoryQuery,useUpdateCategoryMutation ,useGetOneCategoryDetailsQuery} = categoryAPi;

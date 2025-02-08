@@ -178,6 +178,11 @@ class SubCategory(db.Model):
     @classmethod 
     def get_by_id(cls,id):
         return cls.query.filter_by(id = UUID(id)).first()
+
+    @classmethod
+    def get_by_name(cls,name):
+        return cls.query.filter_by(sub_category=name).first()
+    
 # product
 class Product(db.Model):
     __tablename__='product'
@@ -202,11 +207,23 @@ class Product(db.Model):
         }
 
     @classmethod
-    def add_product(cls,product):
-        new_product =cls(id=uuid4(),sub_category_id=UUID(product['sub_category_id']),product=product['product'],img_path=product['img_path'],price=product['price'],description=product['description'])
-        db.session.add(new_product)
-        db.session.commit()
-        return True
+    def add_product(cls, product):
+        try:
+            new_product = cls(
+                id=uuid4(),
+                sub_category_id=product["subcategory_id"],
+                product=product["productName"],
+                img_path=product["image"],
+                price=float(product["price"]),  # Ensure float conversion
+                description=product["description"],
+            )
+            print(new_product)
+            db.session.add(new_product)
+            db.session.commit()
+            return True
+        except Exception :
+            db.session.rollback()
+            return False
     
     @classmethod
     def get_all(cls):

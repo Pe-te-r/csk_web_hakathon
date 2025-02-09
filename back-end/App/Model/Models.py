@@ -198,12 +198,12 @@ class Product(db.Model):
 
     def to_json(self):
         return {
-            'id':str(self.id),
-            'subcategory':self.subcategory.subcategory,
-            'product':self.product,
-            'img_path':self.img_path,
-            'price':self.price,
-            'description':self.description
+            "id": str(self.id),
+            "sub_category": self.subcategory.sub_category,
+            "product": self.product,
+            "img_path": self.img_path,
+            "price": self.price,
+            "description": self.description,
         }
 
     @classmethod

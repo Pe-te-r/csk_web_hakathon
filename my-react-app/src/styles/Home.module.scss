@@ -1,30 +1,44 @@
+:root {
+    --primary-color: #ff6600;
+    --secondary-color: #333;
+    --background-light: #f9f9f9;
+    --background-dark: #222;
+    --text-light: white;
+    --text-dark: #333;
+    --spacing-unit: 1rem;
+}
+
 .home-container {
     font-family: Arial, sans-serif;
-    color: #333;
+    color: var(--text-dark);
     text-align: center;
-    
+
     .hero {
         background: url("https://source.unsplash.com/1600x900/?marketplace") center/cover;
-        color: white;
-        padding: 4rem 2rem;
-        
+        color: var(--text-light);
+        padding: calc(var(--spacing-unit) * 4) calc(var(--spacing-unit) * 2);
+
         .hero-content {
             max-width: 600px;
             margin: auto;
             background: rgba(0, 0, 0, 0.6);
-            padding: 2rem;
+            padding: calc(var(--spacing-unit) * 2);
             border-radius: 10px;
         }
 
         .cta-button {
-            background: #ff6600;
-            color: white;
-            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: var(--text-light);
+            padding: var(--spacing-unit) calc(var(--spacing-unit) * 2);
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 1rem;
+            margin-top: var(--spacing-unit);
             font-size: 1.2rem;
+
+            &:hover {
+                background: #cc5500;
+            }
         }
     }
 
@@ -34,7 +48,7 @@
     .why-choose,
     .testimonials,
     .cta {
-        padding: 3rem 2rem;
+        padding: calc(var(--spacing-unit) * 3) calc(var(--spacing-unit) * 2);
     }
 
     .category-grid,
@@ -43,13 +57,13 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 20px;
+        gap: calc(var(--spacing-unit) * 1.25);
     }
 
     .category-card,
     .trending-item {
-        background: #f9f9f9;
-        padding: 1rem;
+        background: var(--background-light);
+        padding: var(--spacing-unit);
         border-radius: 8px;
         width: 200px;
         text-align: center;
@@ -69,7 +83,7 @@
 
     .why-choose li {
         font-size: 1.2rem;
-        margin: 10px 0;
+        margin: calc(var(--spacing-unit) * 0.625) 0;
     }
 
     .testimonials blockquote {
@@ -77,14 +91,10 @@
         font-size: 1.2rem;
     }
 
-    .cta-button:hover {
-        background: #cc5500;
-    }
-
     .footer {
-        background: #222;
-        color: white;
-        padding: 2rem;
+        background: var(--background-dark);
+        color: var(--text-light);
+        padding: calc(var(--spacing-unit) * 2);
     }
 
     @media (max-width: 768px) {
@@ -92,6 +102,113 @@
         .category-grid,
         .trending-grid,
         .steps {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}
+
+.how-it-works {
+    padding: 4rem 2rem;
+    background: #f9f9f9;
+    text-align: center;
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .steps {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .step {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: translateY(-10px);
+        }
+
+        .stepIcon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #666;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .steps {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}
+
+
+.why-choose {
+    padding: 4rem 2rem;
+    background: white;
+    text-align: center;
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .benefits {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .benefit {
+        background: #f9f9f9;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: translateY(-10px);
+        }
+
+        .benefitIcon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #666;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .benefits {
             flex-direction: column;
             align-items: center;
         }

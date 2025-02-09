@@ -1,41 +1,32 @@
-import React, {  useState } from "react";
+import React, {  useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import styles from "../styles/ProductPage.module.scss";
 
-import img1 from "../assets/img1.jpeg";
-import img2 from "../assets/img2.jpeg";
 
-const fakeProducts = [
-  {
-    sub_category: "Electronics",
-    product: "Wireless Headphones",
-    img_path: img1, // ✅ Imported image
-    price: 99.99,
-    description: "High-quality wireless headphones with noise cancellation.",
-  },
-  {
-    sub_category: "Fashion",
-    product: "Sneakers",
-    img_path: img2, // ✅ Imported image
-    price: 59.99,
-    description: "Stylish and comfortable sneakers for everyday wear.",
-  },
-  {
-    sub_category: "Home",
-    product: "Coffee Maker",
-    img_path: img2, // ✅ Reuse imported image
-    price: 39.99,
-    description: "Brew the perfect cup of coffee with this modern coffee maker.",
-  }
-];
+import { useGetAllProductQuery } from "../api/product";
+import Loading from "../components/Loading";
+import { ProductRequestType } from "../types";
+
 
 const ProductsPage: React.FC = () => {
+  const [product,setProduct]=useState<ProductRequestType[]>([])
+  // product
+  const { data,error,isLoading,isSuccess,isError }=useGetAllProductQuery()
+  // search
     const [searchTerm, setSearchTerm] = useState("");
-
-
-    const filteredProducts = fakeProducts.filter((p) =>
+    const filteredProducts = product.filter((p) =>
         p.product.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(data)
+      setProduct(data)
+    }
+    if (isError) {
+      console.log(error)
+    }
+  },[isSuccess,isError])
   
 
     return (
@@ -47,14 +38,17 @@ const ProductsPage: React.FC = () => {
                 className={styles.searchBar}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <div className={styles.productList}>
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((prod, index) => <ProductCard key={index} {...prod} />)
-        ) : (
-          <p className={styles.noResults}>No products found</p>
-        )}
-      </div>
+        />
+        {
+       isLoading ? <Loading /> :
+        
+            <div className={styles.productList}>
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((prod, index) => <ProductCard key={index} {...prod} />)
+              ) : (
+                <p className={styles.noResults}>No products found</p>
+              )}
+            </div>}
     </div>
   );
 };

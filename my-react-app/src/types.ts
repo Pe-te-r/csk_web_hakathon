@@ -47,11 +47,11 @@ export interface CategoryResponseDetailsType{
 
 
 
-export interface ProductRequest {
-  productName: string;
-  category: string;
-  subcategory: string;
+export interface ProductRequestType {
+  id:string
+  product: string;
+  sub_category: string;
   price: number;
   description: string;
-  image: File | string;
+  img_path: string;
 }

@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "./url";
-// import { ProductRequest } from "../types";
+import { ProductRequestType } from "../types";
 
 export const productAPi = createApi({
   reducerPath: "productAPi",
@@ -14,7 +14,10 @@ export const productAPi = createApi({
         body: formData, 
       }),
     }),
+      getAllProduct: builder.query<ProductRequestType[], void>({
+          query:()=>'/product'
+      })
   }),
 });
 
-export const { useCreateProductMutation } = productAPi;
+export const { useCreateProductMutation,useGetAllProductQuery } = productAPi;

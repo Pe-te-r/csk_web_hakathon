@@ -9,17 +9,26 @@ import imgLaptop from '../assets/laptop.jpeg';
 import imgHeadphones from '../assets/headphones.jpeg';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useUser } from '../components/context/UserProvider';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
-      const [step, setStep] = useState(1); // Step 1: Email, Step 2: Password
+  const navigate = useNavigate()
+      const [step, setStep] = useState(1); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleNext = () => {
     if (step === 1 && email) {
-      setStep(2); // Move to password step
+      setStep(2);
     }
   };
+    
+    const { getUser } = useUser()
+
+  const to_register = () => {
+    navigate('/register')
+  }
 
   const handleSubmit = () => {
     if (step === 2 && password) {
@@ -44,6 +53,7 @@ const HomePage = () => {
           <p>Buy & sell easily within your campus. Find great deals or become a seller today!</p>
 
           {/* Multi-step login form for large screens and tablets */}
+          {!getUser() &&
           <div className={styles.loginForm}>
             <h3 className={styles.formHeader}>Login</h3>
             {step === 1 && (
@@ -65,17 +75,20 @@ const HomePage = () => {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                />
+                  />
                 <button onClick={handleSubmit}>Login</button>
               </div>
             )}
           </div>
 
+}
           {/* Fallback button for small screens */}
-          <button className={styles['cta-button']} aria-label="Get Started">
+          {!getUser() &&
+          <button className={styles['cta-button']} aria-label="Get Started" onClick={to_register}>
             Get Started
           </button>
-        </div>
+}
+            </div>
       </section>
 
       {/* Featured Categories */}
@@ -195,7 +208,9 @@ const HomePage = () => {
   <div className={styles.ctaContent}>
     <h2 id="cta-heading">Start Buying & Selling Today</h2>
     <p>Join thousands of students who are already saving money and making connections on Phantom Market.</p>
-    <button className={styles['cta-button']} aria-label="Join Now">Join Now</button>
+          {!getUser &&
+    <button className={styles['cta-button']} onClick={to_register} aria-label="Join Now">Join Now</button>
+    }
   </div>
 </section>
 

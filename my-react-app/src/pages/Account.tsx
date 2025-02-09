@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import styles from "../styles/Account.module.scss";
 import { useBasketStorage } from "../hooks/useBasketStorage";
 import { ProductRequestType } from "../types";
+import { useUser } from "../components/context/UserProvider";
+import { useNavigate } from "react-router-dom";
 
 const Account: React.FC = () => {
+  const {deleteUser}=useUser()
   // Static user profile
   const [user, setUser] = useState({
     name: "John Doe",
@@ -15,6 +18,7 @@ const Account: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [orderHistory, setOrderHistory] = useState<ProductRequestType[]>([]);
 
+  const navigate = useNavigate()
   // Static Order History
   useEffect(() => {
     setOrderHistory([
@@ -67,6 +71,10 @@ const Account: React.FC = () => {
     updateBasket(id, change);
   };
 
+  const handle_logout = () => {
+    deleteUser()
+    navigate('/')
+  }
   return (
     <div className={styles.accountContainer}>
       {/* Profile Section */}
@@ -154,7 +162,7 @@ const Account: React.FC = () => {
       </div>
 
       {/* Logout */}
-      <button className={styles.logoutButton}>Logout</button>
+      <button className={styles.logoutButton} onClick={handle_logout}>Logout</button>
     </div>
   );
 };

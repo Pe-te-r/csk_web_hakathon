@@ -4,9 +4,11 @@ import styles from "../styles/Navbar.module.scss";
 import { FaShoppingCart } from "react-icons/fa";
 import { useBasketStorage } from "../hooks/useBasketStorage";
 import BasketModal from "./BasketModal";
+import { useUser } from "./context/UserProvider";
 
 const Navbar: React.FC = () => {
   const { basket } = useBasketStorage();
+  const  {getUser}=useUser()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basketCount, setBasketCount] = useState(0);
 
@@ -27,8 +29,13 @@ const Navbar: React.FC = () => {
             <Link to="/" className={styles.link}>Home</Link>
             <Link to="/about" className={styles.link}>About Us</Link>
             <Link to="/products" className={styles.link}>Products</Link>
+            {
+              getUser() &&
             <Link to="/account" className={styles.link}>Account</Link>
+            }
+            {!getUser() &&
             <Link to="/register" className={styles.registerButton}>Register</Link>
+            }
             <div className={styles.cartIcon} onClick={() => setIsModalOpen(true)}>
               <FaShoppingCart size={24} />
               {basketCount > 0 && <span className={styles.cartCount}>{basketCount}</span>}

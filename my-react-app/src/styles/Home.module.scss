@@ -54,6 +54,7 @@
     .footer {
         background: var(--background-dark);
         color: var(--text-light);
+        width: 100%;
         padding: calc(var(--spacing-unit) * 2);
     }
 
@@ -237,6 +238,7 @@
     background: linear-gradient(135deg, #ff6600, #ff8c42);
     color: white;
     text-align: center;
+    width: 80%;
 
     .ctaContent {
         max-width: 600px;

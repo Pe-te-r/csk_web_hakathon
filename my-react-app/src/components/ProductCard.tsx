@@ -26,6 +26,7 @@ const ProductCard: React.FC<ProductProps> = ({
   const quantity = basketItem ? basketItem.quantity : 0;
 
   const handleUpdate = (newQuantity: number) => {
+   
     if (newQuantity === 0) {
       removeFromBasket(id);
     } else {

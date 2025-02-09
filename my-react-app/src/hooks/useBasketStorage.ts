@@ -28,6 +28,7 @@ export function useBasketStorage() {
 
   // Update basket quantity
   const updateBasket = (id: string, quantity: number) => {
+    console.log(quantity)
     setBasket((prev = []) =>
       prev.map((item) => (item.id === id ? { ...item, quantity } : item))
     );

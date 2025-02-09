@@ -7,6 +7,7 @@ import ProductsPage from "./pages/ProductPage";
 import AdminDash from "./pages/admin/AdminDash";
 import Account from "./pages/Account";
 import AboutUs from "./pages/AboutUs";
+import ProtectedRoute from "./components/context/ProtectedRoute";
 
 const App = () => {
   return (
@@ -19,9 +20,9 @@ const App = () => {
           <Route path="/register" element={ <Register/>} />
           <Route path="/login" element={ <LoginForm/>} />
           <Route path="/products" element={ <ProductsPage/>} />
-          <Route path="/account" element={<Account/>}/>
+          <Route path="/account"element={<ProtectedRoute><Account /></ProtectedRoute>}/>
           <Route path="/about" element={<AboutUs/>}/>
-          <Route path="/admin/*" element={ <AdminDash/>} />
+          <Route path="/admin/*"element={<ProtectedRoute><AdminDash /></ProtectedRoute>} />
         </Routes>
       </div>
     </Router>

@@ -72,8 +72,8 @@ const Account: React.FC = () => {
   };
 
   const handle_logout = () => {
-    deleteUser()
     navigate('/')
+    setTimeout(deleteUser,10)
   }
   return (
     <div className={styles.accountContainer}>

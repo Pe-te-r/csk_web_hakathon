@@ -6,6 +6,7 @@ import LoginForm from "./pages/Login";
 import ProductsPage from "./pages/ProductPage";
 import AdminDash from "./pages/admin/AdminDash";
 import Account from "./pages/Account";
+import AboutUs from "./pages/AboutUs";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/login" element={ <LoginForm/>} />
           <Route path="/products" element={ <ProductsPage/>} />
           <Route path="/account" element={<Account/>}/>
+          <Route path="/about" element={<AboutUs/>}/>
           <Route path="/admin/*" element={ <AdminDash/>} />
         </Routes>
       </div>

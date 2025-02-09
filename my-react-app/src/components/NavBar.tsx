@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "../styles/Navbar.module.scss";
 import { FaShoppingCart } from "react-icons/fa";
-import useLocalStorage from "../hooks/useBasketStorage";
-import { BasketItem } from "../types";
+import {useBasketStorage} from "../hooks/useBasketStorage";
 
 const Navbar: React.FC = () => {
-  const [basket, setBasket] = useLocalStorage<BasketItem[]>("basket", []);
+  const {basket,updateBasket,removeFromBasket,clearBasket} = useBasketStorage();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basketCount, setBasketCount] = useState(0);
 
@@ -23,26 +22,15 @@ const Navbar: React.FC = () => {
 
   // Update basket quantity
   const updateQuantity = (id: string, newQuantity: number) => {
-        if (basket.length > 0) {
-          
-          const updatedBasket = basket
-          .map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
-          .filter((item) => item.quantity > 0); // Remove item if quantity is 0
-          
-          setBasket(updatedBasket);
-        }
-  };
-
-  // Clear Basket
-  const clearCart = () => {
-    setBasket([]);
+    if (newQuantity === 0) {
+      removeFromBasket(id);
+    } else {
+      updateBasket(id,newQuantity );
+    }
   };
 
   // Calculate Total Price
-  let totalPrice:number
-  if (basket.length > 0) {
-     totalPrice = basket.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  }
+  const totalPrice = basket.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <>
@@ -95,7 +83,7 @@ const Navbar: React.FC = () => {
                 </ul>
                 <p className={styles.totalPrice}>Total: ${totalPrice.toFixed(2) || ' '}</p>
                 <button onClick={() => console.log("Total Price:", totalPrice)} className={styles.buyButton}>Buy</button>
-                <button onClick={clearCart} className={styles.clearButton}>Clear Cart</button>
+                <button onClick={clearBasket} className={styles.clearButton}>Clear Cart</button>
               </>
             )}
           </div>

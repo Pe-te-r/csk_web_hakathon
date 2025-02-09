@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { store } from './store.ts';
 import './index.css'
 import App from './App.tsx'
-import { BasketProvider } from './context/BasketProvider.tsx';
+import { BasketProvider } from './components/context/BasketProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

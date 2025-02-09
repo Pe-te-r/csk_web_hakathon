@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode } from "react";
-import { useBasketStorage } from "../hooks/useBasketStorage";
-import { ProductRequestType } from "../types";
+import { useBasketStorage } from "../../hooks/useBasketStorage";
+import { ProductRequestType } from "../../types";
 
 // Define the shape of the context
 interface BasketContextType {
@@ -8,6 +8,7 @@ interface BasketContextType {
   addToBasket: (item: ProductRequestType) => void;
   removeFromBasket: (id: string | number) => void;
   clearBasket: () => void;
+  updateBasket:(id:string,quantity:number)=>void
 }
 
 // Create the context
@@ -15,10 +16,10 @@ const BasketContext = createContext<BasketContextType | undefined>(undefined);
 
 // Create the provider component
 export function BasketProvider({ children }: { children: ReactNode }) {
-  const { basket, addToBasket, removeFromBasket, clearBasket } = useBasketStorage();
+  const { basket, addToBasket, removeFromBasket, clearBasket,updateBasket } = useBasketStorage();
 
   return (
-    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket, clearBasket }}>
+    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket, clearBasket ,updateBasket}}>
       {children}
     </BasketContext.Provider>
   );

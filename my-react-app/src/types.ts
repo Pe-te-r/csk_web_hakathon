@@ -54,6 +54,8 @@ export interface ProductRequestType {
   price: number;
   description: string;
   img_path: string;
+    quantity: number; // Ensure this exists!
+
 }
 
 export interface BasketItem {

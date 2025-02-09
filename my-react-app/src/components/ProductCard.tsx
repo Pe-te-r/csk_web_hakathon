@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/Product.module.scss";
-import useLocalStorage from "../hooks/useBasketStorage";
+import { useBasket } from "./context/BasketProvider";
 
-interface ProductProps {
+interface ProductRequestType {
   id: string;
   sub_category: string;
   product: string;
@@ -11,13 +11,7 @@ interface ProductProps {
   description: string;
 }
 
-interface BasketItem {
-  id: string;
-  quantity: number;
-  price: number;
-}
-
-const ProductCard: React.FC<ProductProps> = ({
+const ProductCard: React.FC<ProductRequestType> = ({
   id,
   sub_category,
   product,
@@ -25,41 +19,22 @@ const ProductCard: React.FC<ProductProps> = ({
   price,
   description,
 }) => {
-  const [basket, setBasket] = useLocalStorage<BasketItem[]>("basket", []);
+  const { basket, addToBasket, removeFromBasket } = useBasket();
   const [quantity, setQuantity] = useState<number>(0);
 
-  // Load quantity from localStorage on mount
+  // Ensure UI updates when basket changes
   useEffect(() => {
-    if ( basket.length > 0){
-      const foundItem = basket.find((item) => item.id === id);
-        if (foundItem) {
-          setQuantity(foundItem.quantity);
-        }
-    }
-  }, [basket, id]); // Re-run when basket changes
+    const foundItem = basket.find((item) => item.id === id);
+    setQuantity(foundItem ? foundItem.quantity : 0);
+  }, [basket, id]); 
 
   // Function to update basket
   const updateBasket = (newQuantity: number) => {
-    let updatedBasket: BasketItem[];
-
     if (newQuantity === 0) {
-      // Remove item if quantity is 0
-      updatedBasket = basket.filter((item) => item.id !== id);
+      removeFromBasket(id);
     } else {
-      if ( basket.length> 0) {
-        const existingItem = basket.find((item) => item.id === id);
-        if (existingItem) {
-          updatedBasket = basket.map((item) =>
-            item.id === id ? { ...item, quantity: newQuantity } : item
-          );
-        } else {
-          updatedBasket = [...basket, { id, quantity: newQuantity, price }];
-        }
-        setBasket(updatedBasket);
-      }
+      addToBasket({ id, sub_category, product, img_path, price, description, quantity: newQuantity });
     }
-
-    setQuantity(newQuantity); // Update UI state
   };
 
   return (

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styles from "../styles/Product.module.scss";
-import { useBasket } from "./context/BasketProvider";
+import { useBasketStorage } from "../hooks/useBasketStorage";
 
-interface ProductRequestType {
+interface ProductProps {
   id: string;
   sub_category: string;
   product: string;
@@ -11,7 +11,7 @@ interface ProductRequestType {
   description: string;
 }
 
-const ProductCard: React.FC<ProductRequestType> = ({
+const ProductCard: React.FC<ProductProps> = ({
   id,
   sub_category,
   product,
@@ -19,21 +19,17 @@ const ProductCard: React.FC<ProductRequestType> = ({
   price,
   description,
 }) => {
-  const { basket, addToBasket, removeFromBasket } = useBasket();
-  const [quantity, setQuantity] = useState<number>(0);
+  const { basket, addToBasket, removeFromBasket, updateBasket } =
+    useBasketStorage();
 
-  // Ensure UI updates when basket changes
-  useEffect(() => {
-    const foundItem = basket.find((item) => item.id === id);
-    setQuantity(foundItem ? foundItem.quantity : 0);
-  }, [basket, id]); 
+  const basketItem = basket.find((item) => item.id === id);
+  const quantity = basketItem ? basketItem.quantity : 0;
 
-  // Function to update basket
-  const updateBasket = (newQuantity: number) => {
+  const handleUpdate = (newQuantity: number) => {
     if (newQuantity === 0) {
       removeFromBasket(id);
     } else {
-      addToBasket({ id, sub_category, product, img_path, price, description, quantity: newQuantity });
+      updateBasket(id, newQuantity);
     }
   };
 
@@ -48,12 +44,27 @@ const ProductCard: React.FC<ProductRequestType> = ({
           <span className={styles.price}>${price.toFixed(2)}</span>
           {quantity > 0 ? (
             <div className={styles.quantityControls}>
-              <button className={styles.subtractbtn} onClick={() => updateBasket(quantity - 1)}>-</button>
+              <button
+                className={styles.subtractbtn}
+                onClick={() => handleUpdate(quantity - 1)}
+              >
+                -
+              </button>
               <span className={styles.quantity}>{quantity}</span>
-              <button className={styles.addBtn} onClick={() => updateBasket(quantity + 1)}>+</button>
+              <button
+                className={styles.addBtn}
+                onClick={() => handleUpdate(quantity + 1)}
+              >
+                +
+              </button>
             </div>
           ) : (
-            <button onClick={() => updateBasket(1)} className={styles.buyBtn}>
+            <button
+              onClick={() =>
+                addToBasket({ id, sub_category, product, img_path, price, description, quantity: 1 })
+              }
+              className={styles.buyBtn}
+            >
               Add to Basket
             </button>
           )}

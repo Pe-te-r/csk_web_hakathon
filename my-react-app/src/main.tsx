@@ -12,8 +12,8 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <BasketProvider>
         <App />
-      </BasketProvider>
       <Toaster/>
+      </BasketProvider>
     </Provider>
   </StrictMode>,
 )

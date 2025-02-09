@@ -1,61 +1,24 @@
-import { useState, useEffect } from "react";
-// import { ProductRequestType } from "../types";
-export interface ProductRequestType {
-  id:string
-  product: string;
-  sub_category: string;
-  price: number;
-  description: string;
-  img_path: string;
-  quantity:number
-}
+import useLocalStorageState from "use-local-storage-state";
+import { ProductRequestType } from "../types";
 
-const BASKET_STORAGE_KEY = "basket";
+const STORAGE_KEY = "basket";
 
+// Custom hook for managing the basket using localStorage
 export function useBasketStorage() {
-  // Initialize state from localStorage
-  const [basket, setBasket] = useState<ProductRequestType[]>(() => {
-    try {
-      const storedBasket = localStorage.getItem(BASKET_STORAGE_KEY);
-      return storedBasket ? (Array.isArray(JSON.parse(storedBasket)) ? JSON.parse(storedBasket) : []) : [];
-    } catch (error) {
-      console.error("Error loading basket from localStorage", error);
-      return [];
-    }
-  });
+  // Use localStorage state hook with a default value of an empty array
+  const [basket, setBasket] = useLocalStorageState<ProductRequestType[]>(
+    STORAGE_KEY,
+    { defaultValue: [] }
+  );
 
-  // Synchronize state with localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(BASKET_STORAGE_KEY, JSON.stringify(basket));
-    } catch (error) {
-      console.error("Error saving basket to localStorage", error);
-    }
-  }, [basket]);
-
-  // Add an item to the basket
+  // Add to basket
   const addToBasket = (item: ProductRequestType) => {
-    setBasket((prevBasket) => [...prevBasket, item]);
+    setBasket((prev = []) => [...prev, item]);
   };
 
-  // Remove an item from the basket by id
+  // Remove from basket
   const removeFromBasket = (id: string | number) => {
-    setBasket((prevBasket) => prevBasket.filter((item) => item.id !== id));
-  };
-
-  // update item
-    const updateBasket = (id:string ,quantity:number) => {
-    setBasket((prevBasket) => {
-      const existingItem = prevBasket.find((b) => b.id === id);
-
-      if (existingItem) {
-        return prevBasket.map((b) =>
-          b.id === id ? { ...b, quantity: quantity } : b
-        );
-      } else {
-        return [...prevBasket];
-      }
-    });
+    setBasket((prev = []) => prev.filter((item) => item.id !== id));
   };
 
   // Clear the entire basket
@@ -63,5 +26,12 @@ export function useBasketStorage() {
     setBasket([]);
   };
 
-  return { basket, addToBasket, removeFromBasket, clearBasket,updateBasket };
+  // Update basket quantity
+  const updateBasket = (id: string, quantity: number) => {
+    setBasket((prev = []) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
+  };
+
+  return { basket, addToBasket, removeFromBasket, clearBasket, updateBasket };
 }

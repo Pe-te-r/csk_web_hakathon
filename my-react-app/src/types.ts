@@ -55,3 +55,10 @@ export interface ProductRequestType {
   description: string;
   img_path: string;
 }
+
+export interface BasketItem {
+  id: string;
+  product: string;
+  price: number;
+  quantity: number;
+}

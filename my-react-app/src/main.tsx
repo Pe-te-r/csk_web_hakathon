@@ -5,11 +5,14 @@ import { Toaster } from "react-hot-toast";
 import { store } from './store.ts';
 import './index.css'
 import App from './App.tsx'
+import { BasketProvider } from './context/BasketProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <BasketProvider>
+        <App />
+      </BasketProvider>
       <Toaster/>
     </Provider>
   </StrictMode>,

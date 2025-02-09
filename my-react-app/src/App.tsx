@@ -8,6 +8,7 @@ import AdminDash from "./pages/admin/AdminDash";
 
 const App = () => {
   return (
+  
     <Router>
       <Navbar />
       <div style={{ marginTop: "20px", padding: "20px" }}>

@@ -43,3 +43,15 @@ export interface CategoryResponseDetailsType{
     subcategory:string
   }[]
 }
+
+
+
+
+export interface ProductRequest {
+  productName: string;
+  category: string;
+  subcategory: string;
+  price: number;
+  description: string;
+  image: File | string;
+}

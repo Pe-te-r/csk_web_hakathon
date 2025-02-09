@@ -1,0 +1,99 @@
+.home-container {
+    font-family: Arial, sans-serif;
+    color: #333;
+    text-align: center;
+    
+    .hero {
+        background: url("https://source.unsplash.com/1600x900/?marketplace") center/cover;
+        color: white;
+        padding: 4rem 2rem;
+        
+        .hero-content {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .cta-button {
+            background: #ff6600;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+    }
+
+    .categories,
+    .trending,
+    .how-it-works,
+    .why-choose,
+    .testimonials,
+    .cta {
+        padding: 3rem 2rem;
+    }
+
+    .category-grid,
+    .trending-grid,
+    .steps {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .category-card,
+    .trending-item {
+        background: #f9f9f9;
+        padding: 1rem;
+        border-radius: 8px;
+        width: 200px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-card img,
+    .trending-item img {
+        width: 100%;
+        border-radius: 5px;
+    }
+
+    .why-choose ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .why-choose li {
+        font-size: 1.2rem;
+        margin: 10px 0;
+    }
+
+    .testimonials blockquote {
+        font-style: italic;
+        font-size: 1.2rem;
+    }
+
+    .cta-button:hover {
+        background: #cc5500;
+    }
+
+    .footer {
+        background: #222;
+        color: white;
+        padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+
+        .category-grid,
+        .trending-grid,
+        .steps {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}

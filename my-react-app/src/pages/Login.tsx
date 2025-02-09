@@ -3,13 +3,16 @@ import toast from "react-hot-toast";
 import { useLoginMutation } from "../api/auth";
 import styles from "../styles/LoginForm.module.scss";
 import Loading from "../components/Loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "../components/context/UserProvider";
 
 const LoginForm: React.FC = () => {
+  const {saveUser} =useUser()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate()
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +43,9 @@ const LoginForm: React.FC = () => {
   useEffect(() => {
     if (isSuccess) {
         console.log(data)
+        saveUser(data.token,data.id)
       toast.success("Login successful");
+      navigate('/')
     }
     if (isError && error) {
       if ("status" in error) {

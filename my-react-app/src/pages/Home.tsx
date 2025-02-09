@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from '../styles/Home.module.scss';
 import imgBook from '../assets/books.jpeg';
 import imgElectronic from '../assets/electronics.jpeg';
@@ -8,18 +7,76 @@ import imgHostel from '../assets/hostel.jpeg';
 import imgShoe from '../assets/shoes.jpeg';
 import imgLaptop from '../assets/laptop.jpeg';
 import imgHeadphones from '../assets/headphones.jpeg';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const HomePage = () => {
+      const [step, setStep] = useState(1); // Step 1: Email, Step 2: Password
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleNext = () => {
+    if (step === 1 && email) {
+      setStep(2); // Move to password step
+    }
+  };
+
+  const handleSubmit = () => {
+    if (step === 2 && password) {
+      // Static login data for demonstration
+      const staticEmail = 'phantom8526@duck.com';
+      const staticPassword = '1234';
+
+      if (email === staticEmail && password === staticPassword) {
+        toast.success('Login successful!');
+      } else {
+        toast.error('Invalid email or password.');
+      }
+    }
+  };
+
   return (
     <div className={styles['home-container']}>
       {/* Hero Section */}
-      <header className={styles.hero}>
-        <div className={styles['hero-content']}>
+  <section className={styles.hero}>
+        <div className={styles.heroContent}>
           <h1>Welcome to Phantom Market</h1>
           <p>Buy & sell easily within your campus. Find great deals or become a seller today!</p>
-          <button className={styles['cta-button']} aria-label="Get Started">Get Started</button>
+
+          {/* Multi-step login form for large screens and tablets */}
+          <div className={styles.loginForm}>
+            <h3 className={styles.formHeader}>Login</h3>
+            {step === 1 && (
+              <div className={styles.formStep}>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button onClick={handleNext}>Next</button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className={styles.formStep}>
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button onClick={handleSubmit}>Login</button>
+              </div>
+            )}
+          </div>
+
+          {/* Fallback button for small screens */}
+          <button className={styles['cta-button']} aria-label="Get Started">
+            Get Started
+          </button>
         </div>
-      </header>
+      </section>
 
       {/* Featured Categories */}
       <section className={styles.categories} aria-labelledby="categories-heading">
@@ -112,17 +169,35 @@ const HomePage = () => {
 </section>
 
       {/* Testimonials */}
-      <section className={styles.testimonials} aria-labelledby="testimonials-heading">
-        <h2 id="testimonials-heading">What Students Say</h2>
-        <blockquote>"Sold my old books in a day! Super convenient and easy to use." – Sarah</blockquote>
-        <blockquote>"Best place to buy second-hand gadgets on campus." – Kevin</blockquote>
-      </section>
+     <section className={styles.testimonials} aria-labelledby="testimonials-heading">
+  <h2 id="testimonials-heading">What Students Say</h2>
+  <div className={styles.testimonialGrid}>
+    <div className={styles.testimonialCard}>
+      <img src="/path/to/sarah-avatar.jpg" alt="Sarah" className={styles.avatar} />
+      <blockquote>"Sold my old books in a day! Super convenient and easy to use."</blockquote>
+      <p className={styles.author}>– Sarah</p>
+    </div>
+    <div className={styles.testimonialCard}>
+      <img src="/path/to/kevin-avatar.jpg" alt="Kevin" className={styles.avatar} />
+      <blockquote>"Best place to buy second-hand gadgets on campus."</blockquote>
+      <p className={styles.author}>– Kevin</p>
+    </div>
+    <div className={styles.testimonialCard}>
+      <img src="/path/to/emma-avatar.jpg" alt="Emma" className={styles.avatar} />
+      <blockquote>"I found affordable textbooks and made new friends. Highly recommend!"</blockquote>
+      <p className={styles.author}>– Emma</p>
+    </div>
+  </div>
+</section>
 
       {/* Call to Action */}
-      <section className={styles.cta} aria-labelledby="cta-heading">
-        <h2 id="cta-heading">Start Buying & Selling Today</h2>
-        <button className={styles['cta-button']} aria-label="Join Now">Join Now</button>
-      </section>
+<section className={styles.cta} aria-labelledby="cta-heading">
+  <div className={styles.ctaContent}>
+    <h2 id="cta-heading">Start Buying & Selling Today</h2>
+    <p>Join thousands of students who are already saving money and making connections on Phantom Market.</p>
+    <button className={styles['cta-button']} aria-label="Join Now">Join Now</button>
+  </div>
+</section>
 
       {/* Footer */}
       <footer className={styles.footer}>

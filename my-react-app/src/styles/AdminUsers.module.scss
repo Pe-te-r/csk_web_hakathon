@@ -80,7 +80,7 @@ $table-header: #2c3e50;
         color: white;
 
         &:hover {
-            background-color: darken($danger-color, 10%);
+            background-color: darken($primary-color, 10%);
         }
     }
 

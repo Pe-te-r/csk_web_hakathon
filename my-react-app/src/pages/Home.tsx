@@ -7,24 +7,34 @@ import imgHostel from '../assets/hostel.jpeg';
 import imgShoe from '../assets/shoes.jpeg';
 import imgLaptop from '../assets/laptop.jpeg';
 import imgHeadphones from '../assets/headphones.jpeg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useUser } from '../components/context/UserProvider';
 import { useNavigate } from 'react-router-dom';
+import { useLoginMutation } from '../api/auth';
+import ReactLoading from "react-loading";
+
 
 const HomePage = () => {
   const navigate = useNavigate()
       const [step, setStep] = useState(1); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [sendLogin, { isLoading,data, isSuccess, error, isError }] = useLoginMutation();
 
   const handleNext = () => {
     if (step === 1 && email) {
       setStep(2);
     }
   };
+
+  const handlePrev = () => {
+    if (step === 2) {
+      setStep(1)
+    }
+  }
     
-    const { getUser } = useUser()
+    const { getUser,saveUser } = useUser()
 
   const to_register = () => {
     navigate('/register')
@@ -33,17 +43,25 @@ const HomePage = () => {
   const handleSubmit = () => {
     if (step === 2 && password) {
       // Static login data for demonstration
-      const staticEmail = 'phantom8526@duck.com';
-      const staticPassword = '1234';
-
-      if (email === staticEmail && password === staticPassword) {
-        toast.success('Login successful!');
-      } else {
-        toast.error('Invalid email or password.');
-      }
+      sendLogin({ 'email': email,'password':password})
     }
   };
 
+
+
+  useEffect(() => {
+    if (isSuccess) {
+        console.log(data)
+        saveUser(data.token,data.id)
+      toast.success("Login successful");
+    }
+    if (isError && error) {
+      if ("status" in error) {
+        const errorMessage: string = error?.data as string;
+        toast.error(errorMessage);
+      }
+    }
+  }, [isError, isSuccess]);
   return (
     <div className={styles['home-container']}>
       {/* Hero Section */}
@@ -76,7 +94,12 @@ const HomePage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   />
+                  {isLoading ? <ReactLoading type="bars" color="#3498db" height={50} width={50} /> :
+                  <>
                 <button onClick={handleSubmit}>Login</button>
+                <button onClick={handlePrev} className={styles.back}>Back</button>
+                  </>
+                  }
               </div>
             )}
           </div>

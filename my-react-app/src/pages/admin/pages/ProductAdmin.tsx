@@ -201,8 +201,9 @@ const handleSubmit =  () => {
           <h3 className={styles.modalHeader}>Product Preview</h3>
             <div className={styles.modalContent}>
               
-            <ProductCard
-            product={formData.productName}
+              <ProductCard 
+                id=''
+              product={formData.productName}
             sub_category={formData.subcategory}
             price={Number(formData.price)}
             description={formData.description}

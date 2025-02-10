@@ -1,12 +1,13 @@
 from flask import request, Blueprint
 from flask_restful import Api,Resource
 from App.Model import User
+from App import jwt
 
 users_bp = Blueprint('users_bp',__name__)
 api =Api(users_bp)
 
 class UserResource(Resource):
-    # method_decorators=[jwt.jwt_required]
+    method_decorators=[jwt.jwt_required]
     def get(self, user_id=None):
         try:
             if user_id:
@@ -59,10 +60,11 @@ class UserResource(Resource):
 
 
 class UsersResource(Resource):
-    # method_decorators=[jwt.jwt_required]
+    method_decorators=[jwt.jwt_required]
     def get(self):
         try:
             users = User.all_users()
+            print(users)
             if not users:
                 return {'message':'no user found'},404
             

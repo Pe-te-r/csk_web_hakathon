@@ -24,6 +24,10 @@ export const userApi = createApi({
       query: () => "/users",
       providesTags: ["Users"], 
     }),
+    getOneUser: builder.query<UserResponseType, {id?:string}>({
+      query:(id)=> `/users/${id}`,
+      providesTags:['Users']
+    }),
     updateUser: builder.mutation<string, UpdateUserRequest>({
       query: ({ id, ...updatedData }) => ({
         url: `/users/${id}`,
@@ -35,4 +39,4 @@ export const userApi = createApi({
   }),
 });
 
-export const { useGetUsersQuery, useUpdateUserMutation } = userApi;
+export const { useGetUsersQuery, useUpdateUserMutation,useGetOneUserQuery } = userApi;

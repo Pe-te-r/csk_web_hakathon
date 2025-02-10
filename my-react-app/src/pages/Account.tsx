@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/Account.module.scss";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useBasketStorage } from "../hooks/useBasketStorage";
 import { ProductRequestType } from "../types";
 import { useUser } from "../components/context/UserProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetOneUserQuery } from "../api/users";
 
 const Account: React.FC = () => {
-  const {deleteUser}=useUser()
-  // Static user profile
+const { getUser,deleteUser } = useUser();
+const { id: paramId } = useParams<{ id: string }>(); // Get ID from URL
+
+// Use paramId if available, otherwise fallback to logged-in user ID
+const id = paramId || getUser()?.userId;
+
+const { data, isError, isSuccess, error } = useGetOneUserQuery(
+  id ? id : skipToken
+);
   const [user, setUser] = useState({
     name: "John Doe",
     email: "johndoe@example.com",
@@ -58,6 +67,8 @@ const Account: React.FC = () => {
     clearBasket();
   };
 
+
+
   // Handle Clearing Order History
   const handleClearHistory = () => {
     setOrderHistory([]);
@@ -75,6 +86,14 @@ const Account: React.FC = () => {
     navigate('/')
     setTimeout(deleteUser,100)
   }
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(data)
+    }
+    if (isError) {
+      console.log(error)
+    }
+  },[isSuccess,isError])
   return (
     <div className={styles.accountContainer}>
       {/* Profile Section */}

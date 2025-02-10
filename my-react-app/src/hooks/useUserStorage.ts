@@ -26,7 +26,7 @@ export function useUserStorage() {
   };
 
   // Retrieve user data
-  const getUser = () => user;
+  const getUser = () =>user;
 
   // Delete user data from storage
   const deleteUser = () => {

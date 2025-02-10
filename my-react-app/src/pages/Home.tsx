@@ -231,7 +231,7 @@ const HomePage = () => {
   <div className={styles.ctaContent}>
     <h2 id="cta-heading">Start Buying & Selling Today</h2>
     <p>Join thousands of students who are already saving money and making connections on Phantom Market.</p>
-          {!getUser &&
+          {!getUser() &&
     <button className={styles['cta-button']} onClick={to_register} aria-label="Join Now">Join Now</button>
     }
   </div>

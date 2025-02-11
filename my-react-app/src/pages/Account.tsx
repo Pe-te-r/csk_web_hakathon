@@ -22,13 +22,19 @@ const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateDa
 
 const userRef = useRef(data); // Store initial user data
 
-  const [user, setUser] = useState<{name?:string,email:string,profilePicture?:string,id:string}>({
+  const [user, setUser] = useState<{name?:string,email:string,profilePicture?:File | string,id:string}>({
     id:'',
     name: "",
     email: "",
     profilePicture: "",
   });
 
+  const getImageSrc = () => {
+  if (user.profilePicture instanceof File) {
+    return URL.createObjectURL(user.profilePicture); 
+  }
+  return user.profilePicture || "";
+};
   const { basket, clearBasket, updateBasket, removeFromBasket } = useBasketStorage();
   const [isEditing, setIsEditing] = useState(false);
   const [orderHistory, setOrderHistory] = useState<ProductRequestType[]>([]);
@@ -51,7 +57,7 @@ const userRef = useRef(data); // Store initial user data
 
   // Handle Profile Edit
   const handleEditProfile = () => {
-    setIsEditing(!isEditing);
+        setIsEditing(!isEditing);
     
     const updatedUserData = {
       "id": user.id,
@@ -75,19 +81,17 @@ const userRef = useRef(data); // Store initial user data
     console.log(user)
   };
 
-  // Handle Image Upload
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-  setUser((prevUser) => ({
-    ...prevUser,
-    profilePicture: e.target!.result as string, // Assert that target is not null
-  }));
+// Handle Image Upload
+const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  if (event.target.files && event.target.files[0]) {
+    const file = event.target.files[0];
+
+    setUser((prevUser) => ({
+      ...prevUser,
+      profilePicture: file, // Store the actual File object, not Base64
+    }));
+  }
 };
-      reader.readAsDataURL(event.target.files[0]);
-    }
-  };
 
   // Handle Clearing Cart
   const handleClearCart = () => {
@@ -115,8 +119,9 @@ const userRef = useRef(data); // Store initial user data
   }
   useEffect(() => {
     if (isSuccess) {
+      console.log(data?.img_path)
       userRef.current = data
-      setUser({id:data.id, email:data.email,name:data.username})
+      setUser({id:data.id, email:data.email,name:data.username,profilePicture:data?.img_path})
     }
     if (isError) {
       if('data' in error)toast.error(error.data as string)
@@ -135,7 +140,7 @@ const userRef = useRef(data); // Store initial user data
     <div className={styles.accountContainer}>
       {/* Profile Section */}
       <div className={styles.profileSection}>
-        <img src={user.profilePicture} alt="Profile" className={styles.profileImage} />
+        <img src={getImageSrc()} alt="Profile" className={styles.profileImage} />
         {isEditing ? (
           <div>
             <input
@@ -155,7 +160,7 @@ const userRef = useRef(data); // Store initial user data
             <p>{user.email}</p>
               {updateIsLoading ?
                 <ReactLoading type="bars" color="#3498db" height={50} width={50} /> :
-                <button className={styles.editButton} onClick={handleEditProfile}>
+                <button className={styles.editButton} onClick={()=> setIsEditing(!isEditing)}>
                   Edit Profile
                 </button>}
           </>

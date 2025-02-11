@@ -2,6 +2,7 @@ from flask import request, Blueprint
 from flask_restful import Api,Resource
 from App.Model import User
 from App import jwt
+from App.helpers import get_img_url
 
 users_bp = Blueprint('users_bp',__name__)
 api =Api(users_bp)
@@ -62,15 +63,13 @@ class UserResource(Resource):
                 edited = True
 
             # Handle file upload (only if FormData is used)
-            if (request.content_type.startswith("multipart/form-data")and "profile_picture" in request.files):
-                file = request.files["profile_picture"]
-                if file.filename:  # Ensure a file is provided
-                    file_path = f"static/uploads/{file.filename}"
-                    file.save(file_path)
-                    # user_exists.update_user({"profile_picture": file_path})
-                    print(file_path)
-                    print('file saved')
-                    edited = True
+            if (
+                request.content_type.startswith("multipart/form-data")
+                and "img_path" in request.files
+            ):
+                file = request.files["img_path"]
+                img_path=get_img_url(file)
+                edited = True
 
             if edited:
                 return "User updated successfully", 200

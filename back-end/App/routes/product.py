@@ -1,15 +1,13 @@
-import requests
 from flask import request,  Blueprint
 from flask_restful import Api,Resource
 from App.Model import Product,SubCategory
+from App.helpers import get_img_url
 
 
 product_bp=Blueprint('product_bp',__name__)
 api =Api(product_bp)
 
-# Replace with your actual ImgBB API key
-IMGDB_API_KEY = "76fd07e743624b8d8f03033d234f8f88"
-IMGDB_UPLOAD_URL = f"https://api.imgbb.com/1/upload?key={IMGDB_API_KEY}"
+
 
 class MultiProduct(Resource):
     def post(self):
@@ -27,14 +25,8 @@ class MultiProduct(Resource):
                 return "Missing required product details", 409
 
             image = request.files["image"]
-            files = {"image": (image.filename, image.stream, image.mimetype)}
-
-            response = requests.post(IMGDB_UPLOAD_URL, files=files)
-
-            if response.status_code != 200:
-                return "Image upload failed", 500
             
-            img_url = response.json()["data"]["url"]  
+            img_url = get_img_url(image)
 
             subcategory_exists = SubCategory.get_by_name(subcategory)
             if not subcategory_exists:

@@ -29,7 +29,6 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   const id = paramId || getUser()?.userId;
 
   const {
-    data,
     isSuccess,
     error,
     isError,
@@ -103,13 +102,15 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   };
 
   // Handle verification code success or error
-  useEffect(() => {
-    if (codeIsSuccess) {
-      setIsSubmitEnabled(true);
-      setIsCodeVerified(true);
-      toast.success("Verification code is correct!");
+    useEffect(() => {
+        if (codeIsSuccess) {
+        console.log(codeData)
+        setIsSubmitEnabled(true);
+        setIsCodeVerified(true);
+        toast.success("Verification code is correct!");
     }
     if (codeIsError) {
+        console.log(codeError)
       toast.error("Invalid verification code. Please try again.");
     }
   }, [codeIsSuccess, codeIsError]);
@@ -182,7 +183,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               type="button"
               onClick={handleRequestNewCode}
               className={styles.requestNewCodeButton}
-              disabled={isRequestingNewCode}
+              disabled={isRequestingNewCode || isCodeVerified}
             >
               {isRequestingNewCode ? "Sending..." : "Request New Code"}
             </button>

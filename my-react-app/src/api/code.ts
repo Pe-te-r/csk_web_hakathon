@@ -23,7 +23,7 @@ export const codeApi = createApi({
 
     verifyCode: builder.mutation<string, { id?: string; code: string }>({
       query: ({ id, code }) => ({
-        url: `/auth/verify`,
+        url: `/auth/auth`,
         method: "POST",
         body: { id, code },
         headers: {

@@ -36,7 +36,21 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["Users"], 
     }),
+updateUserForm: builder.mutation<string, FormData>({
+  query: (formData) => {
+    const id = formData.get("id");
+    if (!id) throw new Error("ID is required in FormData");
+    return {
+      url: `/users/${id}`,
+      method: "PUT",
+      body: formData,
+    };
+  },
+  invalidatesTags: ["Users"],
+}),
+
+
   }),
 });
 
-export const { useGetUsersQuery, useUpdateUserMutation,useGetOneUserQuery } = userApi;
+export const { useGetUsersQuery, useUpdateUserMutation,useGetOneUserQuery,useUpdateUserFormMutation } = userApi;

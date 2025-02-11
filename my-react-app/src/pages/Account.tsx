@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "../styles/Account.module.scss";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useBasketStorage } from "../hooks/useBasketStorage";
 import { ProductRequestType } from "../types";
+import ReactLoading from 'react-loading'
 import { useUser } from "../components/context/UserProvider";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetOneUserQuery } from "../api/users";
+import { useGetOneUserQuery, useUpdateUserFormMutation } from "../api/users";
+import toast from "react-hot-toast";
+
 
 const Account: React.FC = () => {
 const { getUser,deleteUser } = useUser();
@@ -14,10 +17,13 @@ const { id: paramId } = useParams<{ id: string }>(); // Get ID from URL
 // Use paramId if available, otherwise fallback to logged-in user ID
 const id = paramId || getUser()?.userId;
 
-const { data, isError, isSuccess, error } = useGetOneUserQuery(
-  id ? id : skipToken
-);
-  const [user, setUser] = useState<{name?:string,email:string,profilePicture?:string}>({
+const { data, isError, isSuccess, error } = useGetOneUserQuery(id? id: skipToken,{refetchOnFocus:true,pollingInterval: 7000,refetchOnReconnect:true});
+const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateData,error:updateError,isSuccess:updateIsSuccess}] = useUpdateUserFormMutation()
+
+const userRef = useRef(data); // Store initial user data
+
+  const [user, setUser] = useState<{name?:string,email:string,profilePicture?:string,id:string}>({
+    id:'',
     name: "",
     email: "",
     profilePicture: "",
@@ -35,7 +41,7 @@ const { data, isError, isSuccess, error } = useGetOneUserQuery(
         id: "ORD12345",
         product: "Wireless Headphones",
         price: 49.99,
-        img_path: "https://via.placeholder.com/100",
+        img_path: "",
         description: "Good for music",
         sub_category: "Speakers",
         quantity: 3,
@@ -46,6 +52,27 @@ const { data, isError, isSuccess, error } = useGetOneUserQuery(
   // Handle Profile Edit
   const handleEditProfile = () => {
     setIsEditing(!isEditing);
+    
+    const updatedUserData = {
+      "id": user.id,
+      "username": user.name,
+      "img_path":user.profilePicture
+    }
+    const oldUserData = {
+      'id': userRef.current?.id,
+      "username": userRef.current?.username,
+      'img_path':userRef.current?.img_path
+    }
+    if (JSON.stringify(oldUserData) === JSON.stringify(updatedUserData)) {
+      console.log("No changes detected, skipping update.");
+      return;
+    }
+    const formDataToSend = new FormData();
+    formDataToSend.append('id',user.id)
+    formDataToSend.append("username", user.name || '');
+    formDataToSend.append("img_path", user.profilePicture || '');
+      updateUser(formDataToSend)
+    console.log(user)
   };
 
   // Handle Image Upload
@@ -88,12 +115,22 @@ const { data, isError, isSuccess, error } = useGetOneUserQuery(
   }
   useEffect(() => {
     if (isSuccess) {
-      setUser({ email:data.email,name:data.username})
+      userRef.current = data
+      setUser({id:data.id, email:data.email,name:data.username})
     }
     if (isError) {
-      console.log(error)
+      if('data' in error)toast.error(error.data as string)
     }
   },[isSuccess,isError])
+  useEffect(() => {
+    if (updateIsSuccess) {
+      toast.success(updateData)
+    }
+    if (updateIsError) {
+      if('data' in updateError)toast.error(updateError?.data as string)
+    }
+    
+  },[updateIsError,updateIsSuccess])
   return (
     <div className={styles.accountContainer}>
       {/* Profile Section */}
@@ -110,14 +147,17 @@ const { data, isError, isSuccess, error } = useGetOneUserQuery(
             <button className={styles.saveButton} onClick={handleEditProfile}>
               Save
             </button>
+            
           </div>
         ) : (
           <>
             <h2>{user.name}</h2>
             <p>{user.email}</p>
-            <button className={styles.editButton} onClick={handleEditProfile}>
-              Edit Profile
-            </button>
+              {updateIsLoading ?
+                <ReactLoading type="bars" color="#3498db" height={50} width={50} /> :
+                <button className={styles.editButton} onClick={handleEditProfile}>
+                  Edit Profile
+                </button>}
           </>
         )}
       </div>

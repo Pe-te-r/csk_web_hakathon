@@ -22,14 +22,17 @@ export interface UserResponseType{
         first_name?: string,    
         username?:string
         email: string,
-        isActive: boolean,
+  isActive: boolean,
+    img_path?:string
+
 }
 
 export interface UpdateUserRequest{
         id:string,
         first_name?: string,    
         isActive?: boolean,
-        username?:string
+  username?: string
+  img_path?:string
 
 }
 

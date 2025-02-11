@@ -64,7 +64,7 @@ const handleSubmit =  () => {
   // e.preventDefault();
 
   if (!formData.image) {
-    alert("Please select an image");
+    toast.custom ("Please select an image");
     return;
   }
 

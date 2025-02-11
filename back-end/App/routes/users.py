@@ -49,26 +49,25 @@ class UserResource(Resource):
 
             # Handle common fields (text data)
             if "isActive" in data:
-                user_exists.update_user(
-                    {"active": data["isActive"] == "true"}
-                )  # Convert to bool
+                if not user_exists.update_user({"active": data["isActive"] == "true"}):
+                    return 'action cannot be completed, try again later',500
                 edited = True
 
             if "username" in data:
-                user_exists.update_user({"username": data["username"]})
+                if not user_exists.update_user({"username": data["username"]}):
+                    return 'error the username',500
                 edited = True
 
             if "first_name" in data:
-                user_exists.update_user({"first_name": data["first_name"]})
+                if not user_exists.update_user({"first_name": data["first_name"]}):
+                    return 'error the firstname',500
                 edited = True
 
-            # Handle file upload (only if FormData is used)
-            if (
-                request.content_type.startswith("multipart/form-data")
-                and "img_path" in request.files
-            ):
+            if (request.content_type.startswith("multipart/form-data")and "img_path" in request.files ):
                 file = request.files["img_path"]
                 img_path=get_img_url(file)
+                if not user_exists.save_profile_photo(img_path):
+                    return 'error the profile',500
                 edited = True
 
             if edited:

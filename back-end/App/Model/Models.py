@@ -23,6 +23,7 @@ class User(db.Model):
 
     # relationship
     password = db.Relationship('Password',backref='user',uselist=False)
+    profilepic = db.Relationship('ProfilePic',backref='user',uselist=False)
     def __repr__(self):
         return f'User({self.email} {self.username})'
     
@@ -32,7 +33,8 @@ class User(db.Model):
                 'id':str(self.id),
                 'username':self.username,
                 'isActive':self.active,
-                'email':self.email
+                'email':self.email,
+                'img_path':self.profilepic.img_path
             }
         return{
             'id':str(self.id),
@@ -42,12 +44,15 @@ class User(db.Model):
         }
 
     def update_user(self, data):
-        for key, value in data.items():
-            if hasattr(self, key): 
-                setattr(self, key, value)
-        
-        db.session.commit()
-
+        try:
+            for key, value in data.items():
+                if hasattr(self, key): 
+                    setattr(self, key, value)
+            
+            db.session.commit()
+            return True
+        except Exception:
+            return False
     @classmethod
     def get_user_by_id(cls,id):
         return cls.query.filter_by(id=UUID(id)).first()
@@ -55,6 +60,14 @@ class User(db.Model):
     def is_active(self):
         return self.is_active
     
+    def save_profile_photo(self,img_path):
+        try:
+            profile=ProfilePic(id=self.id,img_path=img_path)
+            db.session.add(profile)
+            db.session.commit()
+            return True
+        except Exception:
+            return False
     @classmethod
     def get_by_email(cls,email):
         return cls.query.filter_by(email=email).first()
@@ -91,6 +104,11 @@ class User(db.Model):
         return bcrypt.checkpw(password.encode('utf-8'), self.password.password)
 
 
+# profile_picture
+class ProfilePic(db.Model):
+    __tablename__='profilepic'
+    user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False,primary_key=True)
+    img_path=db.Column(db.String(150),nullable=False) 
     
 
 # password class

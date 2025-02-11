@@ -3,6 +3,7 @@ from flask_restful import Api,Resource
 # from flask_jwt_extended import create_access_token
 from App import jwt
 from App.Model import User,Auth
+from time import sleep
 
 
 auth_bp = Blueprint('auth_bp',__name__)
@@ -76,12 +77,19 @@ class LoginResource(Resource):
             return  f"an error occured {str(e)}", 500        
 
 class AuthResource(Resource):
-    def get(self,id=None):
+    def post(self):
         try:
-            if id is None:
-                return ' here on auth'
-            print('one')
+            if  not request.is_json:
+                return "Content-type must be JSON", 400
+            sleep(3)
+            return request.get_json()
+        except Exception as e:
+            return  f"an error occured {str(e)}", 500        
+
+    def get(self,id):
+        try:
             user_exists = User.get_user_by_id(id)
+            sleep(5)
             if not user_exists:
                 return 'user not found',404
             auth= Auth.get_by_user_id(id)
@@ -93,10 +101,7 @@ class AuthResource(Resource):
             
             code = auth.change_code()
             print(code)
-            return code,200
-            
-                
-
+            return 'code sent to email',200
         except Exception as e:
             return  f"an error occured {str(e)}", 500        
 

@@ -130,7 +130,7 @@ class Auth(db.Model):
 
     @staticmethod
     def generate_code():
-        return ''.join(choices(digits, k=5))
+        return ''.join(choices(digits, k=6))
     
     def verify(self,code):
         return self.random_code==code

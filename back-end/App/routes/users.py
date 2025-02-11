@@ -14,46 +14,73 @@ class UserResource(Resource):
                 user = User.get_user_by_id(user_id)
                 print(user)
                 if not user:
-                    return {'message':' user not found'},404
+                    return  'user not found',404
                 
                 if not user.is_active():
-                    return {'message':'user is disabled'},403
+                    return'user is disabled',403
                 
 
-                return {"message": user.to_json()},200
-            return {"message": "user id not provided"},400
+                return  user.to_json(owner=True),200
+            return "user id not provided",400
             
         except Exception as e:
-            return {'error':f'an error occured {str(e)}'},500
+            return f'an error occured {str(e)}',500
+
+
+
+
 
     def put(self, user_id):
         try:
             user_exists = User.get_user_by_id(user_id)
-            if  not user_exists:
-                return 'user not found',404
-            
-            data = request.get_json()
+            if not user_exists:
+                return "User not found", 404
 
-            edited=False
+            edited = False
+
+            # Check if the request is JSON
+            if request.content_type == "application/json":
+                data = request.get_json()
+            else:  # Assume it's FormData (multipart/form-data)
+                data = request.form
+            
+
+
+            # Handle common fields (text data)
             if "isActive" in data:
-                user_exists.update_user({"active": data["isActive"]})
-                edited=True
-            print('two')
-            if 'username' in data:
-                user_exists.update_user({'username':data['username']})
-                edited=True
-        
-            if 'first_name' in data:
-                user_exists.update_user({'first_name':data['first_name']})
-                edited=True
-            
-            if edited:           
-                return  "User  updated successfully",200
-            
-            return "no data to update",200
-            
+                user_exists.update_user(
+                    {"active": data["isActive"] == "true"}
+                )  # Convert to bool
+                edited = True
+
+            if "username" in data:
+                user_exists.update_user({"username": data["username"]})
+                edited = True
+
+            if "first_name" in data:
+                user_exists.update_user({"first_name": data["first_name"]})
+                edited = True
+
+            # Handle file upload (only if FormData is used)
+            if (request.content_type.startswith("multipart/form-data")and "profile_picture" in request.files):
+                file = request.files["profile_picture"]
+                if file.filename:  # Ensure a file is provided
+                    file_path = f"static/uploads/{file.filename}"
+                    file.save(file_path)
+                    # user_exists.update_user({"profile_picture": file_path})
+                    print(file_path)
+                    print('file saved')
+                    edited = True
+
+            if edited:
+                return "User updated successfully", 200
+
+            return "No data to update", 200
+
         except Exception as e:
-            return f'error occured {str(e)}',500
+            return f"Error occurred: {str(e)}", 500
+
+
     def delete(self, user_id):
         return f"User {user_id} deleted successfully"
 
@@ -64,13 +91,11 @@ class UsersResource(Resource):
     def get(self):
         try:
             users = User.all_users()
-            print(users)
             if not users:
-                return {'message':'no user found'},404
+                return'no user found',404
             
             return [user.to_json() for user in users],200
         except Exception as e:
-            print(e)
             return f'error occured {str(e)}',500
 
 

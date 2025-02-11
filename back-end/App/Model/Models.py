@@ -26,7 +26,14 @@ class User(db.Model):
     def __repr__(self):
         return f'User({self.email} {self.username})'
     
-    def to_json(self):
+    def to_json(self,owner=False):
+        if owner:
+            return{
+                'id':str(self.id),
+                'username':self.username,
+                'isActive':self.active,
+                'email':self.email
+            }
         return{
             'id':str(self.id),
             'first_name':self.first_name,

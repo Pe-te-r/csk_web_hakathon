@@ -8,6 +8,7 @@ import { useUser } from "../components/context/UserProvider";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetOneUserQuery, useUpdateUserFormMutation } from "../api/users";
 import toast from "react-hot-toast";
+import ChangePasswordModal from "../components/ChangePasswordModal";
 
 
 const Account: React.FC = () => {
@@ -20,8 +21,8 @@ const id = paramId || getUser()?.userId;
 const { data, isError, isSuccess, error } = useGetOneUserQuery(id? id: skipToken,{refetchOnFocus:true,pollingInterval: 7000,refetchOnReconnect:true});
 const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateData,error:updateError,isSuccess:updateIsSuccess}] = useUpdateUserFormMutation()
 
-const userRef = useRef(data); // Store initial user data
-
+const userRef = useRef(data); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState<{name?:string,email:string,profilePicture?:File | string,id:string}>({
     id:'',
     name: "",
@@ -220,13 +221,16 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
       {/* Account Settings */}
       <div className={styles.accountSettings}>
-        <button className={styles.settingsButton}>Change Password</button>
+       <button className={styles.settingsButton} onClick={() => setIsModalOpen(true)}>
+      Change Password
+    </button>
         <button className={styles.settingsButton}>Enable 2FA</button>
         <button className={styles.dangerButton}>Delete Account</button>
       </div>
 
       {/* Logout */}
       <button className={styles.logoutButton} onClick={handle_logout}>Logout</button>
+          <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

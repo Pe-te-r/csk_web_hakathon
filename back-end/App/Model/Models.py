@@ -1,5 +1,7 @@
 import bcrypt
 from enum import Enum as PyEnum
+from string import digits
+from random import choices
 from uuid import uuid4,UUID
 from App.Model import  db
 
@@ -24,18 +26,18 @@ class User(db.Model):
     # relationship
     password = db.Relationship('Password',backref='user',uselist=False)
     profilepic = db.Relationship('ProfilePic',backref='user',uselist=False)
+    auth = db.Relationship('Auth',backref='user',uselist=False)
     def __repr__(self):
         return f'User({self.email} {self.username})'
     
     def to_json(self,owner=False):
-        print(self.profilepic.img_path)
         if owner:
             return{
                 'id':str(self.id),
                 'username':self.username,
                 'isActive':self.active,
                 'email':self.email,
-                'img_path': self.profilepic.img_path if self.profilepic else ''
+                'img_path': self.profilepic.img_path if self.profilepic else None
             }
         return{
             'id':str(self.id),
@@ -112,6 +114,41 @@ class User(db.Model):
     def correct_password(self,password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password.password)
 
+# authentication
+class Auth(db.Model):
+    __tablename__='auth'
+    user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False,primary_key=True)
+    random_code=db.Column(db.String(6),nullable=False)
+    secret=db.Column(db.String(6),nullable=True)
+
+    def change_code(self):
+        new_code = Auth.generate_code()
+        self.random_code=new_code
+        db.session.add(self)
+        db.session.commit()
+        return self.random_code 
+
+    @staticmethod
+    def generate_code():
+        return ''.join(choices(digits, k=5))
+    
+    def verify(self,code):
+        return self.random_code==code
+    @classmethod
+    def get_by_user_id(cls,id):
+        return cls.query.filter_by(user_id=UUID(id)).first()
+    
+    @classmethod
+    def create_auth(cls,id):
+        try:
+            random_code=cls.generate_code()
+            auth=cls(user_id=UUID(id),random_code=random_code)
+            db.session.add(auth)
+            db.session.commit()
+            db.session.refresh(auth)
+            return auth
+        except Exception:
+            return False        
 
 # profile_picture
 class ProfilePic(db.Model):

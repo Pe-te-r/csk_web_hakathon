@@ -2,7 +2,7 @@ from flask import Blueprint,request
 from flask_restful import Api,Resource
 # from flask_jwt_extended import create_access_token
 from App import jwt
-from App.Model import User
+from App.Model import User,Auth
 
 
 auth_bp = Blueprint('auth_bp',__name__)
@@ -75,5 +75,32 @@ class LoginResource(Resource):
         except Exception as e:
             return  f"an error occured {str(e)}", 500        
 
+class AuthResource(Resource):
+    def get(self,id=None):
+        try:
+            if id is None:
+                return ' here on auth'
+            print('one')
+            user_exists = User.get_user_by_id(id)
+            if not user_exists:
+                return 'user not found',404
+            auth= Auth.get_by_user_id(id)
+            if not auth:
+                auth = Auth.create_auth(id)
+            
+            if not auth:
+                return 'error occured',500
+            
+            code = auth.change_code()
+            print(code)
+            return code,200
+            
+                
+
+        except Exception as e:
+            return  f"an error occured {str(e)}", 500        
+
+
+api.add_resource(AuthResource,'/auth', "/auth/<string:id>")
 api.add_resource(RegisterResource,'/register')
 api.add_resource(LoginResource,'/login')

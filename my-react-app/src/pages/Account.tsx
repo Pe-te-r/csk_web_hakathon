@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetOneUserQuery, useUpdateUserFormMutation } from "../api/users";
 import toast from "react-hot-toast";
 import ChangePasswordModal from "../components/ChangePasswordModal";
+import TwoFAModal from "../components/TwoFAModal";
 
 
 const Account: React.FC = () => {
@@ -23,6 +24,7 @@ const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateDa
 
 const userRef = useRef(data); 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
   const [user, setUser] = useState<{name?:string,email:string,profilePicture?:File | string,id:string}>({
     id:'',
     name: "",
@@ -224,13 +226,15 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
        <button className={styles.settingsButton} onClick={() => setIsModalOpen(true)}>
       Change Password
     </button>
-        <button className={styles.settingsButton}>Enable 2FA</button>
+        {/* <button className={styles.settingsButton}>Enable 2FA</button> */}
+        <button className={styles.settingsButton} onClick={() => setIs2FAModalOpen(true)}>Enable 2F</button>
         <button className={styles.dangerButton}>Delete Account</button>
       </div>
 
       {/* Logout */}
       <button className={styles.logoutButton} onClick={handle_logout}>Logout</button>
           <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <TwoFAModal isOpen={is2FAModalOpen} onClose={() => setIs2FAModalOpen(false)} />
     </div>
   );
 };

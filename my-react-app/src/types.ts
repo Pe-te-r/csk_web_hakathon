@@ -19,7 +19,8 @@ export type RegisterResponse = RegisterSuccessResponse | RegisterErrorResponse;
 
 export interface UserResponseType{
         id:string,
-        first_name: string,    
+        first_name?: string,    
+        username?:string
         email: string,
         isActive: boolean,
 }

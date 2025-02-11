@@ -17,10 +17,10 @@ const id = paramId || getUser()?.userId;
 const { data, isError, isSuccess, error } = useGetOneUserQuery(
   id ? id : skipToken
 );
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    profilePicture: "https://via.placeholder.com/100",
+  const [user, setUser] = useState<{name?:string,email:string,profilePicture?:string}>({
+    name: "",
+    email: "",
+    profilePicture: "",
   });
 
   const { basket, clearBasket, updateBasket, removeFromBasket } = useBasketStorage();
@@ -88,7 +88,7 @@ const { data, isError, isSuccess, error } = useGetOneUserQuery(
   }
   useEffect(() => {
     if (isSuccess) {
-      console.log(data)
+      setUser({ email:data.email,name:data.username})
     }
     if (isError) {
       console.log(error)

@@ -28,13 +28,14 @@ class User(db.Model):
         return f'User({self.email} {self.username})'
     
     def to_json(self,owner=False):
+        print(self.profilepic.img_path)
         if owner:
             return{
                 'id':str(self.id),
                 'username':self.username,
                 'isActive':self.active,
                 'email':self.email,
-                'img_path':self.profilepic.img_path
+                'img_path': self.profilepic.img_path if self.profilepic else ''
             }
         return{
             'id':str(self.id),
@@ -60,13 +61,21 @@ class User(db.Model):
     def is_active(self):
         return self.is_active
     
-    def save_profile_photo(self,img_path):
+    def save_profile_photo(self, img_path):
         try:
-            profile=ProfilePic(id=self.id,img_path=img_path)
-            db.session.add(profile)
+            existing_profile = ProfilePic.query.filter_by(user_id=self.id).first()
+            
+            if existing_profile:
+                existing_profile.img_path = img_path 
+            else:
+                profile = ProfilePic(user_id=self.id, img_path=img_path)
+                db.session.add(profile)
+            
             db.session.commit()
             return True
+        
         except Exception:
+            db.session.rollback()
             return False
     @classmethod
     def get_by_email(cls,email):
@@ -109,6 +118,9 @@ class ProfilePic(db.Model):
     __tablename__='profilepic'
     user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False,primary_key=True)
     img_path=db.Column(db.String(150),nullable=False) 
+
+    def __repr__(self):
+        return f'ProfilePicture({self.img_path})'
     
 
 # password class

@@ -8,16 +8,20 @@ import { UserResponseType } from "../../../types";
 const AdminUsers = () => {
   const {data,isSuccess,isError,error,isLoading,refetch} = useGetUsersQuery(undefined,{pollingInterval:500,refetchOnFocus:true,refetchOnReconnect:true})
   const [users, setUsers] = useState<UserResponseType[]>([]);
-  const [updateUser,{isLoading:updateLoading,isError:updateIsError,error:updateError,isSuccess:updateIsSuccess,data:updateData}]=useUpdateUserMutation()
+  const [updateUser,{isError:updateIsError,error:updateError,isSuccess:updateIsSuccess,data:updateData}]=useUpdateUserMutation()
 
-  const toggleUserStatus = (id: string) => {
-    const userToUpdate = users.find((user) => user.id === id)
-    if (!userToUpdate) return
-    const updatedStatus = !userToUpdate.isActive;
-    updateUser({'id':id,'isActive':updatedStatus})
+const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
 
+const toggleUserStatus = (id: string) => {
+  const userToUpdate = users.find((user) => user.id === id);
+  if (!userToUpdate) return;
+  const updatedStatus = !userToUpdate.isActive;
 
-  };
+  setLoadingUserId(id); // Set the loading state for this user
+  updateUser({ id, isActive: updatedStatus })
+    .finally(() => setLoadingUserId(null)); // Reset loading state after update completes
+};
+
   useEffect(() => {
     if (isSuccess) {
       if (Array.isArray(data)) {
@@ -78,15 +82,10 @@ const AdminUsers = () => {
                         </span>
                       </td>
                       <td>
-                        <button
-                        className={`${styles.actionButton} ${styles.deactivate}`}
-                        onClick={() => toggleUserStatus(user.id)}
-                        >
-                        {
-                          updateLoading? <Loading/>:
-                          user.isActive ? "Deactivate" : "Activate"
-                        }
+                        <button className={`${styles.actionButton} ${styles.deactivate}`} onClick={() => toggleUserStatus(user.id)} disabled={loadingUserId === user.id}>
+                          {loadingUserId === user.id ? <Loading /> : user.isActive ? "Deactivate" : "Activate"}
                         </button>
+
                         <button className={`${styles.actionButton} ${styles.more}`}>More</button>
                       </td>
                     </tr>

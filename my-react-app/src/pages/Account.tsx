@@ -119,9 +119,9 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   }
   useEffect(() => {
     if (isSuccess) {
-      console.log(data?.img_path)
       userRef.current = data
-      setUser({id:data.id, email:data.email,name:data.username,profilePicture:data?.img_path})
+      setUser({id:data.id, email:data.email,name:data.username,profilePicture:data?.img_path??'https://i.pinimg.com/236x/e7/1e/2f/e71e2fac8f9d7492cfbc57a0f730adda.jpg'})
+      
     }
     if (isError) {
       if('data' in error)toast.error(error.data as string)

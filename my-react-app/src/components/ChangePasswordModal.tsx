@@ -1,27 +1,42 @@
 import { useState, useEffect } from "react";
 import styles from "../styles/ChangePasswordModal.module.scss";
 import toast from "react-hot-toast";
+import { useGetRandomCodeQuery } from "../api/code";
+import { useUser } from "./context/UserProvider";
+import { useParams } from "react-router-dom";
+import { skipToken } from "@reduxjs/toolkit/query";
+import ReactLoading from 'react-loading'
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
-  isOpen,
-  onClose,
+    isOpen,
+    onClose,
 }) => {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [verificationCode, setVerificationCode] = useState(["", "", "", "", ""]);
-  const [isCodeVerified, setIsCodeVerified] = useState(false);
-  const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [verificationCode, setVerificationCode] = useState(["", "", "", "", ""]);
+    const [isCodeVerified, setIsCodeVerified] = useState(false);
+    const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+    const[requestSent,setRequestSent]=useState(false)
+    
+    const { id: paramId } = useParams<{ id: string }>();
+    const { getUser } = useUser()
+    const id = paramId || getUser()?.userId;
+    const {data,isLoading,isSuccess,error,isError}= useGetRandomCodeQuery(id ? id : skipToken, { skip: !requestSent })
 
   const staticCode = "ABCDE"; // Static verification code
 
   useEffect(() => {
-    if (newPassword && confirmPassword && newPassword === confirmPassword) {
-      toast.success("Passwords match!");
+      if (newPassword && confirmPassword && newPassword === confirmPassword) {
+          if (!requestSent) {
+              toast.success('password math')
+              setRequestSent(true)
+        }
     }
   }, [newPassword, confirmPassword]);
 
@@ -78,6 +93,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     toast.success("Password changed successfully!");
     onClose(); // Close modal
   };
+    useEffect(() => {
+        if (isSuccess) {
+            console.log(data)
+        }
+        if (isError) {
+            console.log(error)
+        }
+    },[isSuccess,isError])
 
   if (!isOpen) return null;
 
@@ -101,10 +124,17 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         />
         {newPassword && confirmPassword && newPassword === confirmPassword && (
           <div className={styles.verificationContainer}>
+                      {isLoading ?
+            <>
+                          <p>Verification code being sent to your email</p>
+                          <ReactLoading type="bars" color="#3498db" height={50} width={50} /> 
+            </>
+                          :
+                          <>
             <p>Enter the verification code sent to your email:</p>
-            <div className={styles.codeInputContainer}>
-              {verificationCode.map((char, index) => (
-                <input
+                      <div className={styles.codeInputContainer}>
+                          {verificationCode.map((char, index) => (
+                  <input
                   key={index}
                   type="text"
                   maxLength={1}
@@ -112,9 +142,11 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   onPaste={handlePaste}
                   className={styles.codeInput}
-                />
-              ))}
+                  />
+                ))}
             </div>
+            </>
+                }
             {isCodeVerified && <span className={styles.tickMark}>✔</span>}
           </div>
         )}

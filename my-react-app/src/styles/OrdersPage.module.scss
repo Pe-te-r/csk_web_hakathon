@@ -1,0 +1,114 @@
+.ordersPage {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .addOrder {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+
+        input {
+            flex: 1 1 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+
+            &:hover {
+                background-color: #218838;
+            }
+        }
+    }
+
+    .ordersTable {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        select {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .editButton,
+        .saveButton,
+        .deleteButton {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .editButton {
+            background-color: #ffc107;
+            color: black;
+
+            &:hover {
+                background-color: #e0a800;
+            }
+        }
+
+        .saveButton {
+            background-color: #17a2b8;
+            color: white;
+
+            &:hover {
+                background-color: #138496;
+            }
+        }
+
+        .deleteButton {
+            background-color: #dc3545;
+            color: white;
+
+            &:hover {
+                background-color: #c82333;
+            }
+        }
+    }
+}

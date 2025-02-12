@@ -4,6 +4,8 @@ from string import digits
 from random import choices
 from uuid import uuid4,UUID
 from App.Model import  db
+from App.helpers import Totp
+
 
 class Role(PyEnum):
     ADMIN='admin'
@@ -127,6 +129,20 @@ class Auth(db.Model):
         db.session.add(self)
         db.session.commit()
         return self.random_code 
+
+    def generate_secret(self):
+        try:
+            code = Totp.generate()
+            self.secret=code
+            db.session.add(self)
+            db.session.commit()
+            return self.secret
+        except Exception:
+            db.session.rollback()
+            return False
+        
+    def verify_totp(self,code):
+        return Totp.verify(self.secret,code)
 
     @staticmethod
     def generate_code():

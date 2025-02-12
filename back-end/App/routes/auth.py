@@ -67,7 +67,6 @@ class LoginResource(Resource):
             if not user.correct_password(data['password']):
                 return 'wrong password',401
             
-            # token = create_access_token(identity=user.email)
             token = jwt.create_access_token(user.email)
             
             return {'token':token,'id':str(user.id)},200
@@ -81,19 +80,13 @@ class AuthResource(Resource):
         try:
             if not request.is_json:
                 return "Content-type must be JSON", 400
-            print('one')
             data = request.get_json()
-            print('two')
-            print(data)
-            print('three')
             required_fields = ["code", "id"]
             for field in required_fields:
                 if field not in data:
                     return  f"Missing field {field}", 400
-            print('four')
 
             user = User.get_user_by_id(data["id"])
-            print('five')
             if not user:
                 return "User not found", 404
 
@@ -130,7 +123,52 @@ class AuthResource(Resource):
             return  f"An error occurred: {str(e)}", 500
 
 
+class TotpCode(Resource):
+    def post(self):
+        try:
+            if not request.is_json:
+                return "Content-type must be JSON", 400
+            data = request.get_json()
+      
+            required_fields = ["code", "id"]
+            for field in required_fields:
+                if field not in data:
+                    return f"Missing field {field}", 400
+
+            user = User.get_user_by_id(data["id"])
+            if not user:
+                return "User not found", 404
+
+            auth = Auth.get_by_user_id(data["id"])
+            if not auth:
+                return "Authentication record not found", 404
+            if auth.verify_totp(data["code"]):
+                return "2FA enabled", 200
+            return "2FA not enabled try again", 401
+
+        except Exception as e:
+            return f"An error occurred: {str(e)}", 500
+
+    def get(self,id):
+        try:
+            user = User.get_user_by_id(id)
+            if not user:
+                return 'user not found',404
+            
+            auth = Auth.get_by_user_id(id)
+            if not auth:
+                return  "Authentication record not found", 404
+
+            code = auth.generate_secret()
+            return code,200
+        except Exception as e:
+            return  f"An error occurred: {str(e)}", 500
+
+
+
+
 api.add_resource(AuthResource, "/auth", "/auth/<string:id>")
+api.add_resource(TotpCode,"/totp", "/totp/<string:id>")
 
 api.add_resource(RegisterResource,'/register')
 api.add_resource(LoginResource,'/login')

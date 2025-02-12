@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "../styles/TwoFAModal.module.scss";
 import ReactLoading from "react-loading";
 import toast from "react-hot-toast";
-import { useGetRandomCodeQuery, useVerifyCodeMutation } from "../api/code";
+import { useGetRandomCodeQuery, useGetTotpCodeQuery, useVerifyCodeMutation, useVerifyTotpMutation } from "../api/code";
 import { QRCodeCanvas } from "qrcode.react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useUser } from "./context/UserProvider";
@@ -13,6 +13,10 @@ interface TwoFAModalProps {
   onClose: () => void;
 }
 
+const generateTOTPURI = (secret: string, email: string, appName: string='PhantomMarket') => {
+  return `otpauth://totp/${appName}:${encodeURIComponent(email)}?secret=${secret}&issuer=${appName}`;
+};
+
 const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
   const [totpCode, setTotpCode] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,10 +24,11 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
   const [otpInput, setOtpInput] = useState("");
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [canRequestNewCode, setCanRequestNewCode] = useState(true);
+  const [totpSecret,setSecretCode] = useState('')
 
   // Static QR code data
-  const staticQrCodeData = "ZRG6NJES4XTURPANCFUIEGGEMSUD3AVT";
-  const qrCodeUrl = `otpauth://totp/PhantomMarket?secret=${staticQrCodeData}&issuer=PhantomMarket`;
+  // const staticQrCodeData = "ZRG6NJES4XTURPANCFUIEGGEMSUD3AVT";
+  const qrCodeUrl = generateTOTPURI(totpSecret,'mail')
 
   const { getUser } = useUser();
   const { id: paramId } = useParams<{ id: string }>();
@@ -35,8 +40,14 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
     { skip: !isOpen }
   );
   const [verifyCode, { isLoading: verifyIsLoading, isSuccess: verifyIsSuccess, isError: verifyIsError, data: verifyData, error: verifyError }] =
-    useVerifyCodeMutation();
+  useVerifyCodeMutation();
+  const { data:otpData,isSuccess:otpIsSuccess,error:otpError,isError:otpIsError,isLoading:otpIsLoading} = useGetTotpCodeQuery(
+    userIdRef.current ? userIdRef.current : skipToken,
+    {skip:!isCodeVerified}
+  )
 
+  // totp
+  const [sendTotp]=useVerifyTotpMutation()
   // Generate TOTP code when modal opens
   useEffect(() => {
     if (isOpen && canRequestNewCode) {
@@ -73,14 +84,14 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
 
   // Handle copying QR code URL
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(qrCodeUrl);
-    toast.success("QR code URL copied to clipboard!");
+    navigator.clipboard.writeText(totpSecret);
+    toast.success("QR code secret copied to clipboard!");
   };
 
   // Handle enabling 2FA
   const handleEnable2FA = () => {
     if (otpInput.length === 6) {
-      verifyCode({ id: userIdRef.current, code: otpInput }).unwrap().then(() => {
+      sendTotp({ id: userIdRef.current, code: otpInput }).unwrap().then(() => {
         setIs2FAEnabled(true);
         toast.success("2FA enabled successfully!");
         onClose();
@@ -91,6 +102,16 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
       toast.error("Please enter a valid 6-digit OTP.");
     }
   };
+
+  // get totp data
+  useEffect(() => {
+    if (otpIsSuccess) {
+      setSecretCode(otpData)
+    }
+    if (otpIsError) {
+      console.log(otpError)
+    }
+  },[otpIsSuccess,otpIsError])
 
   // Reset state when modal closes
   useEffect(() => {
@@ -158,36 +179,42 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
         )}
 
         {/* Step 2: Display QR Code */}
-        {isCodeVerified && (
-          <div className={styles.step}>
-            <p>Scan the QR code below with your authenticator app:</p>
-            <div className={styles.qrCodeContainer}>
-              <QRCodeCanvas value={qrCodeUrl} size={150} /> {/* Generate QR code dynamically */}
-            </div>
-            <button onClick={handleCopyUrl} className={styles.copyButton}>
-              Copy QR Code URL
-            </button>
-          </div>
-        )}
+        {otpIsLoading ?
+          <ReactLoading type="bars" color="#3498db" height={50} width={50} />
+          :
+          <>
+            {isCodeVerified && (
+              <div className={styles.step}>
+                <p>Scan the QR code below with your authenticator app:</p>
+                <div className={styles.qrCodeContainer}>
+                  <QRCodeCanvas value={qrCodeUrl} size={150} />
+                </div>
+                <button onClick={handleCopyUrl} className={styles.copyButton}>
+                  Copy QR Code Secret
+                </button>
+              </div>
+            )}
 
         {/* Step 3: Enable 2FA */}
-        {isCodeVerified && !is2FAEnabled && (
-          <div className={styles.step}>
-            <p>Enter the OTP from your authenticator app to enable 2FA:</p>
-            <input
-              type="text"
-              value={otpInput}
-              onChange={(e) => setOtpInput(e.target.value)}
-              className={styles.otpInput}
-              placeholder="Enter OTP"
-              maxLength={6}
-            />
-            <button onClick={handleEnable2FA} className={styles.enableButton}>
-              Enable 2FA
-            </button>
-          </div>
-        )}
-
+            {isCodeVerified && !is2FAEnabled && (
+              <div className={styles.step}>
+                <p>Enter the OTP from your authenticator app to enable 2FA:</p>
+                <input
+                  type="text"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value)}
+                  className={styles.otpInput}
+                  placeholder="Enter OTP"
+                  maxLength={6}
+                />
+                <button onClick={handleEnable2FA} className={styles.enableButton}>
+                  Enable 2FA
+                </button>
+              </div>
+            )}
+      </>
+        }
+        
         {/* Close Button */}
         <button className={styles.closeButton} onClick={onClose}>
           Close

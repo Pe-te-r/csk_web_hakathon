@@ -20,6 +20,10 @@ export const codeApi = createApi({
     getRandomCode: builder.query<string, string>({
       query: (id) => `/auth/auth/${id}`,
     }),
+    getTotpCode: builder.query<string, string>({
+      query:(id) =>  `/auth/totp/${id}`
+    }),
+    
 
     verifyCode: builder.mutation<string, { id?: string; code: string }>({
       query: ({ id, code }) => ({
@@ -31,7 +35,19 @@ export const codeApi = createApi({
         },
       }),
     }),
+    verifyTotp: builder.mutation<string, { id?: string; code: string }>({
+      query: ({ id, code }) => ({
+        url: `/auth/totp`,
+        method: "POST",
+        body: { id, code },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+
   }),
 });
 
-export const { useGetRandomCodeQuery, useVerifyCodeMutation } = codeApi;
+export const { useGetRandomCodeQuery, useVerifyCodeMutation,useGetTotpCodeQuery,useVerifyTotpMutation } = codeApi;

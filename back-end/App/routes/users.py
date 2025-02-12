@@ -19,8 +19,10 @@ class UserResource(Resource):
                 if not user.is_active():
                     return'user is disabled',403
                 
+                include_orders = request.args.get("orders", "false").lower() == "true"
 
-                return  user.to_json(owner=True),200
+
+                return  user.to_json(orders=include_orders,owner=True),200
             return "user id not provided",400
             
         except Exception as e:

@@ -26,21 +26,35 @@ class User(db.Model):
     
 
     # relationship
+    order = db.Relationship('Order',back_populates='user',uselist=True)
     password = db.Relationship('Password',backref='user',uselist=False)
     profilepic = db.Relationship('ProfilePic',backref='user',uselist=False)
     auth = db.Relationship('Auth',backref='user',uselist=False)
     def __repr__(self):
         return f'User({self.email} {self.username})'
     
-    def to_json(self,owner=False):
-        if owner:
-            return{
-                'id':str(self.id),
-                'username':self.username,
-                'isActive':self.active,
-                'email':self.email,
-                'img_path': self.profilepic.img_path if self.profilepic else None
+    def to_json(self,orders=False,owner=False):
+        if owner and not orders:
+            return {
+                "id": str(self.id),
+                "username": self.username,
+                "isActive": self.active,
+                "email": self.email,
+                "fa": self.auth.enabled if self.auth else None,
+                "img_path": self.profilepic.img_path if self.profilepic else None,
             }
+        if owner and orders:
+            print('am here')
+            return {
+                "id": str(self.id),
+                "username": self.username,
+                "isActive": self.active,
+                "email": self.email,
+                "fa": self.auth.enabled if self.auth else None,
+                'orders':[order.to_json() for order in self.order] if self.order else None,
+                "img_path": self.profilepic.img_path if self.profilepic else None,
+            }
+
         return{
             'id':str(self.id),
             'first_name':self.first_name,
@@ -122,6 +136,7 @@ class Auth(db.Model):
     user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False,primary_key=True)
     random_code=db.Column(db.String(6),nullable=False)
     secret=db.Column(db.String(6),nullable=True)
+    enabled=db.Column(db.Boolean,nullable=False,default=False)
 
     def change_code(self):
         new_code = Auth.generate_code()
@@ -142,7 +157,12 @@ class Auth(db.Model):
             return False
         
     def verify_totp(self,code):
-        return Totp.verify(self.secret,code)
+        if Totp.verify(self.secret,code):
+            self.enabled=True
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
 
     @staticmethod
     def generate_code():
@@ -174,7 +194,22 @@ class ProfilePic(db.Model):
 
     def __repr__(self):
         return f'ProfilePicture({self.img_path})'
-    
+
+class Order(db.Model):
+    __tablename__='order'
+    id = db.Column(db.UUID,primary_key=True)
+    user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False)
+    product_id = db.Column(db.UUID,db.ForeignKey('product.id'),nullable=False)
+
+    def to_json(self):
+        return {
+            "id":str(self.id),
+            "product":self.product.to_json(),
+        }
+
+    # relation
+    user = db.Relationship('User',back_populates='order',uselist=False)
+    product = db.Relationship('Product',back_populates='order',uselist=False)
 
 # password class
 class Password(db.Model):
@@ -285,6 +320,7 @@ class Product(db.Model):
 
     # relationship
     subcategory=db.Relationship('SubCategory',back_populates='product',uselist=False)
+    order=db.Relationship('Order',back_populates='product',uselist=True)
 
     def to_json(self):
         return {

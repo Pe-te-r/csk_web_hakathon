@@ -3,7 +3,6 @@ from flask_restful import Api,Resource
 # from flask_jwt_extended import create_access_token
 from App import jwt
 from App.Model import User,Auth
-from time import sleep
 
 
 auth_bp = Blueprint('auth_bp',__name__)
@@ -76,36 +75,62 @@ class LoginResource(Resource):
         except Exception as e:
             return  f"an error occured {str(e)}", 500        
 
+
 class AuthResource(Resource):
     def post(self):
         try:
-            if  not request.is_json:
+            if not request.is_json:
                 return "Content-type must be JSON", 400
-            sleep(3)
-            return request.get_json()
-        except Exception as e:
-            return  f"an error occured {str(e)}", 500        
+            print('one')
+            data = request.get_json()
+            print('two')
+            print(data)
+            print('three')
+            required_fields = ["code", "id"]
+            for field in required_fields:
+                if field not in data:
+                    return  f"Missing field {field}", 400
+            print('four')
 
-    def get(self,id):
+            user = User.get_user_by_id(data["id"])
+            print('five')
+            if not user:
+                return "User not found", 404
+
+            auth = Auth.get_by_user_id(data["id"])
+            if not auth:
+                return  "Authentication record not found", 404
+
+            if auth.verify(data["code"]):
+                return  "Code verified successfully", 200
+
+            return  "Code verification failed", 401
+
+        except Exception as e:
+            return {"message": f"An error occurred: {str(e)}"}, 500
+
+    def get(self, id):
         try:
             user_exists = User.get_user_by_id(id)
-            sleep(5)
             if not user_exists:
-                return 'user not found',404
-            auth= Auth.get_by_user_id(id)
+                return"User not found", 404
+
+            auth = Auth.get_by_user_id(id)
             if not auth:
                 auth = Auth.create_auth(id)
-            
+
             if not auth:
-                return 'error occured',500
-            
+                return  "An error occurred", 500
+
             code = auth.change_code()
-            print(code)
-            return 'code sent to email',200
+            print(code)  # Consider logging instead of printing in production
+            return "Code sent to email", 200
+
         except Exception as e:
-            return  f"an error occured {str(e)}", 500        
+            return  f"An error occurred: {str(e)}", 500
 
 
-api.add_resource(AuthResource,'/auth', "/auth/<string:id>")
+api.add_resource(AuthResource, "/auth", "/auth/<string:id>")
+
 api.add_resource(RegisterResource,'/register')
 api.add_resource(LoginResource,'/login')

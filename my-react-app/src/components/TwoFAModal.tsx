@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "../styles/TwoFAModal.module.scss";
 import ReactLoading from "react-loading";
 import toast from "react-hot-toast";
-import { useGetRandomCodeQuery, useVerifyCodeMutation } from "../api/code"; // Use your codeApi
-import {QRCodeCanvas} from "qrcode.react"; // For generating QR codes
+import { useGetRandomCodeQuery, useVerifyCodeMutation } from "../api/code";
+import { QRCodeCanvas } from "qrcode.react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useUser } from "./context/UserProvider";
 import { useParams } from "react-router-dom";
@@ -24,26 +24,25 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
   // Static QR code data
   const staticQrCodeData = "ZRG6NJES4XTURPANCFUIEGGEMSUD3AVT";
   const qrCodeUrl = `otpauth://totp/PhantomMarket?secret=${staticQrCodeData}&issuer=PhantomMarket`;
-    const { getUser } = useUser()
-     const { id: paramId } = useParams<{ id: string }>();
-  const id = paramId || getUser()?.userId;
+
+  const { getUser } = useUser();
+  const { id: paramId } = useParams<{ id: string }>();
+  const userIdRef = useRef(paramId || getUser()?.userId || ""); // Use a ref for userId
 
   // Use the codeApi hooks
-  const {refetch} =useGetRandomCodeQuery(id ?id: skipToken); 
-  const [verifyCode, { isLoading:verifyIsLoadng }] =
+  const { data, error, isError, isSuccess } = useGetRandomCodeQuery(
+    userIdRef.current ? userIdRef.current : skipToken,
+    { skip: !isOpen }
+  );
+  const [verifyCode, { isLoading: verifyIsLoading, isSuccess: verifyIsSuccess, isError: verifyIsError, data: verifyData, error: verifyError }] =
     useVerifyCodeMutation();
 
   // Generate TOTP code when modal opens
   useEffect(() => {
     if (isOpen && canRequestNewCode) {
       setIsLoading(true);
-      refetch().unwrap().then(() => {
-        setIsLoading(false);
-        setCanRequestNewCode(false); // Disable requesting a new code until the current one is used
-      }).catch(() => {
-        toast.error("Failed to generate TOTP code.");
-        setIsLoading(false);
-      });
+      setIsLoading(false);
+      setCanRequestNewCode(false);
     }
   }, [isOpen, canRequestNewCode]);
 
@@ -56,14 +55,8 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
     setTotpCode(newCode);
 
     const submittedCode = newCode.join("");
-
     if (submittedCode.length === 6) {
-      verifyCode({ code: submittedCode }).unwrap().then(() => {
-        setIsCodeVerified(true);
-        toast.success("Code verified! Scan the QR code below.");
-      }).catch(() => {
-        toast.error("Invalid code. Please try again.");
-      });
+      verifyCode({ id: userIdRef.current, code: submittedCode }); // Use userIdRef.current
     }
   };
 
@@ -74,12 +67,7 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
     if (pasteData.length === 6) {
       const newCode = pasteData.split("");
       setTotpCode(newCode);
-      verifyCode({ code: pasteData }).unwrap().then(() => {
-        setIsCodeVerified(true);
-        toast.success("Code verified! Scan the QR code below.");
-      }).catch(() => {
-        toast.error("Invalid code. Please try again.");
-      });
+      verifyCode({ id: userIdRef.current, code: pasteData }); // Use userIdRef.current
     }
   };
 
@@ -92,7 +80,7 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
   // Handle enabling 2FA
   const handleEnable2FA = () => {
     if (otpInput.length === 6) {
-      verifyCode({ code: otpInput }).unwrap().then(() => {
+      verifyCode({ id: userIdRef.current, code: otpInput }).unwrap().then(() => {
         setIs2FAEnabled(true);
         toast.success("2FA enabled successfully!");
         onClose();
@@ -114,6 +102,26 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  // Handle API responses
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data);
+    }
+    if (isError) {
+      if ("data" in error) toast.error(error?.data as string);
+    }
+  }, [isSuccess, isError]);
+
+  useEffect(() => {
+    if (verifyIsSuccess) {
+      setIsCodeVerified(true)
+      toast.success(verifyData);
+    }
+    if (verifyIsError) {
+      if ("data" in verifyError) toast.error(verifyError?.data as string);
+    }
+  }, [verifyIsError, verifyIsSuccess]);
+
   if (!isOpen) return null;
 
   return (
@@ -129,20 +137,21 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
               <ReactLoading type="bars" color="#3498db" height={50} width={50} />
             ) : (
               <div className={styles.codeInputContainer}>
-                  {verifyIsLoadng ? 
-                                <ReactLoading type="bars" color="#3498db" height={50} width={50} />
-                  :
-                    totpCode.map((char, index) => (
+                {verifyIsLoading ? (
+                  <ReactLoading type="bars" color="#3498db" height={50} width={50} />
+                ) : (
+                  totpCode.map((char, index) => (
                     <input
-                    key={index}
-                    type="text"
-                    maxLength={1}
-                    value={char}
-                    onChange={(e) => handleCodeChange(index, e.target.value)}
-                    onPaste={handlePaste}
-                    className={styles.codeInput}
+                      key={index}
+                      type="text"
+                      maxLength={1}
+                      value={char}
+                      onChange={(e) => handleCodeChange(index, e.target.value)}
+                      onPaste={handlePaste}
+                      className={styles.codeInput}
                     />
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>

@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "./url";
-import { CategoryResponseType,UpdateUserRequest ,CategoryResponseDetailsType} from "../types";
+import { CategoryResponseType,CategoryResponseDetailsType} from "../types";
+
+type CategoryRequestType={
+  id?:string,
+  category:string
+}
 
 
 export const categoryAPi = createApi({
@@ -18,7 +23,7 @@ tagTypes: ["Category"],
             providesTags: ["Category"], 
           })
       }),
-    updateCategory: builder.mutation<string, UpdateUserRequest>({
+    updateCategory: builder.mutation<string, CategoryRequestType>({
       query: ({ id, ...updatedData }) => ({
         url: `/category/${id}`,
         method: "PUT",
@@ -26,7 +31,20 @@ tagTypes: ["Category"],
         }),
         invalidatesTags: ["Category"], 
     }),
+    addCategory: builder.mutation<string,{category:string}>({
+      query: (category) => ({
+        url:'/category',
+        method: 'POST',
+        body:category
+      })
+    }),
+    deleteCategory: builder.mutation<string, { id: string }>({
+  query: ({ id }) => ({
+    url: `/category/${id}`,
+    method: 'DELETE', 
+  }),
+}),
   }),
 });
 
-export const { useGetAllCategoryQuery,useUpdateCategoryMutation ,useGetOneCategoryDetailsQuery} = categoryAPi;
+export const { useGetAllCategoryQuery,useUpdateCategoryMutation ,useGetOneCategoryDetailsQuery,useAddCategoryMutation,useDeleteCategoryMutation} = categoryAPi;

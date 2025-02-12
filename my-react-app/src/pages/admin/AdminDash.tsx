@@ -3,7 +3,7 @@ import AdminSideNav from "./AdminSIdeNav";
 import styles from "../../styles/AdminDash.module.scss";
 import AdminUsers from "./pages/AdminUsers";
 import ProductAdmin from "./pages/ProductAdmin";
-import CategoryPage from "./pages/Category";
+import CategoryPage from "./pages/AdminCategory";
 import SubcategoryPage from "./pages/SubcategoryPage";
 import OrdersPage from "./pages/OrdersPage";
 

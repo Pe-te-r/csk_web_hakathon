@@ -24,10 +24,16 @@ export const userApi = createApi({
       query: () => "/users",
       providesTags: ["Users"], 
     }),
-    getOneUser: builder.query<UserResponseType, string>({
-      query:(id)=> `/users/${id}`,
-      providesTags:['Users']
-    }),
+getOneUser: builder.query<UserResponseType, { id: string; orders?: boolean }>({
+  query: ({ id, orders }) => {
+    const queryParams = new URLSearchParams();
+    if (orders) queryParams.append("orders", "true");
+
+    return `/users/${id}?${queryParams.toString()}`;
+  },
+  providesTags: ["Users"],
+}),
+
     updateUser: builder.mutation<string, UpdateUserRequest>({
       query: ({ id, ...updatedData }) => ({
         url: `/users/${id}`,

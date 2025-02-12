@@ -23,7 +23,9 @@ export interface UserResponseType{
         username?:string
         email: string,
   isActive: boolean,
-    img_path?:string
+  img_path?: string
+  fa?: string | null
+  orders?:[]|null
 
 }
 

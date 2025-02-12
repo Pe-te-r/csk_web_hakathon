@@ -149,7 +149,6 @@
     gap: 10px;
     justify-content: center;
     margin-bottom: 20px;
-
     .settingsButton,
     .dangerButton {
         padding: 10px;
@@ -162,6 +161,9 @@
     .settingsButton {
         background-color: #17a2b8;
         color: white;
+    }
+    .settingsButtonDisable{
+        background-color: grey;
     }
 
     .settingsButton:hover {

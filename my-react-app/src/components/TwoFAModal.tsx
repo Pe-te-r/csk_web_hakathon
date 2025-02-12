@@ -11,18 +11,19 @@ import { useParams } from "react-router-dom";
 interface TwoFAModalProps {
   isOpen: boolean;
   onClose: () => void;
+  refetch:()=>void
 }
 
 const generateTOTPURI = (secret: string, email: string, appName: string='PhantomMarket') => {
   return `otpauth://totp/${appName}:${encodeURIComponent(email)}?secret=${secret}&issuer=${appName}`;
 };
 
-const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
+const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose ,refetch}) => {
   const [totpCode, setTotpCode] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [otpInput, setOtpInput] = useState("");
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [canRequestNewCode, setCanRequestNewCode] = useState(true);
   const [totpSecret,setSecretCode] = useState('')
 
@@ -94,6 +95,7 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose }) => {
       sendTotp({ id: userIdRef.current, code: otpInput }).unwrap().then(() => {
         setIs2FAEnabled(true);
         toast.success("2FA enabled successfully!");
+        refetch()
         onClose();
       }).catch(() => {
         toast.error("Invalid OTP. Please try again.");

@@ -19,7 +19,7 @@ const { id: paramId } = useParams<{ id: string }>(); // Get ID from URL
 // Use paramId if available, otherwise fallback to logged-in user ID
 const id = paramId || getUser()?.userId;
 
-const { data, isError, isSuccess, error } = useGetOneUserQuery(id? id: skipToken,{refetchOnFocus:true,pollingInterval: 7000,refetchOnReconnect:true});
+  const { data, isError, isSuccess, error,refetch } = useGetOneUserQuery(id ? { id ,orders:true} : skipToken,{refetchOnFocus:true,refetchOnReconnect:true});
 const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateData,error:updateError,isSuccess:updateIsSuccess}] = useUpdateUserFormMutation()
 
 const userRef = useRef(data); 
@@ -43,20 +43,20 @@ const userRef = useRef(data);
   const [orderHistory, setOrderHistory] = useState<ProductRequestType[]>([]);
 
   const navigate = useNavigate()
-  // Static Order History
-  useEffect(() => {
-    setOrderHistory([
-      {
-        id: "ORD12345",
-        product: "Wireless Headphones",
-        price: 49.99,
-        img_path: "",
-        description: "Good for music",
-        sub_category: "Speakers",
-        quantity: 3,
-      },
-    ]);
-  }, []);
+  // // Static Order History
+  // useEffect(() => {
+  //   setOrderHistory([
+  //     {
+  //       id: "ORD12345",
+  //       product: "Wireless Headphones",
+  //       price: 49.99,
+  //       img_path: "",
+  //       description: "Good for music",
+  //       sub_category: "Speakers",
+  //       quantity: 3,
+  //     },
+  //   ]);
+  // }, []);
 
   // Handle Profile Edit
   const handleEditProfile = () => {
@@ -81,7 +81,6 @@ const userRef = useRef(data);
     formDataToSend.append("username", user.name || '');
     formDataToSend.append("img_path", user.profilePicture || '');
       updateUser(formDataToSend)
-    console.log(user)
   };
 
 // Handle Image Upload
@@ -101,7 +100,11 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     clearBasket();
   };
 
-
+  useEffect(() => {
+    if (userRef.current?.orders) {
+    setOrderHistory(userRef.current.orders)
+  }
+},[userRef.current])
 
   // Handle Clearing Order History
   const handleClearHistory = () => {
@@ -123,16 +126,18 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   useEffect(() => {
     if (isSuccess) {
       userRef.current = data
+      console.log(data)
       setUser({id:data.id, email:data.email,name:data.username,profilePicture:data?.img_path??'https://i.pinimg.com/236x/e7/1e/2f/e71e2fac8f9d7492cfbc57a0f730adda.jpg'})
       
     }
     if (isError) {
       if('data' in error)toast.error(error.data as string)
     }
-  },[isSuccess,isError])
+  },[isSuccess,isError,data])
   useEffect(() => {
     if (updateIsSuccess) {
       toast.success(updateData)
+      refetch()
     }
     if (updateIsError) {
       if('data' in updateError)toast.error(updateError?.data as string)
@@ -227,14 +232,18 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       Change Password
     </button>
         {/* <button className={styles.settingsButton}>Enable 2FA</button> */}
+        {userRef.current?.fa !== null && userRef.current?.fa?
+        <button className={styles.settingsButtonDisable} onClick={() => setIs2FAModalOpen(true)} disabled={true}>Enabled</button>
+        :
         <button className={styles.settingsButton} onClick={() => setIs2FAModalOpen(true)}>Enable 2F</button>
+        }
         <button className={styles.dangerButton}>Delete Account</button>
       </div>
 
       {/* Logout */}
       <button className={styles.logoutButton} onClick={handle_logout}>Logout</button>
           <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-            <TwoFAModal isOpen={is2FAModalOpen} onClose={() => setIs2FAModalOpen(false)} />
+      <TwoFAModal isOpen={is2FAModalOpen} onClose={() => setIs2FAModalOpen(false)} refetch={ refetch} />
     </div>
   );
 };

@@ -275,8 +275,8 @@ class SubCategory(db.Model):
     category = db.Relationship('Category',back_populates='subcategory',uselist=False)
     product = db.Relationship('Product',back_populates='subcategory',uselist=True)
     
-    def to_json(self,category=False):
-        if category:
+    def to_json(self,category_name=False):
+        if  category_name:
             return{
                 'id':str(self.id),
                 'category':self.category.category,

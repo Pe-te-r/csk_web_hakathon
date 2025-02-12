@@ -9,7 +9,6 @@ api = Api(category_bp)
 class SingleCategory(Resource):
     def get(self,id):
         try:
-            print('one')
             subcategory = request.args.get('subcategory')                
             category = Category.get_by_id(id)
             if not category:
@@ -29,8 +28,8 @@ class SingleCategory(Resource):
                 return 'category not found',404
             
             data = request.get_json()
-            if 'name' in  data:
-                category.update(data['name'])
+            if 'category' in  data:
+                category.update(data['category'])
                 return 'category updated',200
             
             return 'missing field',409
@@ -39,11 +38,13 @@ class SingleCategory(Resource):
             return f'error occured {str(e)}',500
     def delete(self,id):
         try:
+            print('one')
             category = Category.get_by_id(id)
+            print(category)
             if not category:
                 return 'category not found',404
             
-            if category.deleted():
+            if category.delete():
                 return 'category deleted succesfull',200
             return 'category not deleted'
         except Exception as e:

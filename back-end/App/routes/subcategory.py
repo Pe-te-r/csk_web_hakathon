@@ -8,6 +8,7 @@ api =Api(subcategory_bp)
 class SingleSubCategory(Resource):
     def get(self,id):
         try:
+
             subcategory = SubCategory.get_by_id(id)
             if not subcategory:
                 return 'subcategory not found',404
@@ -43,7 +44,8 @@ class MultiSubCategory(Resource):
 
     def get(self):
         try:
-            subcategories=SubCategory.get_all()
+            include_orders = request.args.get("orders", "false").lower() == "true"
+            subcategories=SubCategory.get_all(category_name=include_orders)
             if not subcategories:
                 return 'no subcategory found',404
 

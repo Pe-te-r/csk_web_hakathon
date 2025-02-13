@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "./url";
-import { SubCategoryResponseDetailsType,UpdateUserRequest } from "../types";
+import { SubCategoryResponseDetailsType } from "../types";
 
 
 export const subCategoryApi = createApi({
@@ -30,7 +30,7 @@ tagTypes: ["SubCategory"],
         }),
         invalidatesTags: ["SubCategory"], 
     }),
-    updateSubCategory: builder.mutation<string, UpdateUserRequest>({
+    updateSubCategory: builder.mutation<string, {subcategory:string,id:string}>({
       query: ({ id, ...updatedData }) => ({
         url: `/subcategory/${id}`,
         method: "PUT",

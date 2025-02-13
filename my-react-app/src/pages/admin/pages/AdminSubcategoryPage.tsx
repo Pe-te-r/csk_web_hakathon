@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from '../../../styles/SubCategory.module.scss'
 import { useGetAllCategoryQuery } from "../../../api/category";
-import { useAddSubCategoryMutation, useDeleteSubCategoryMutation, useGetAllSubCategoryQuery } from "../../../api/sub_category";
+import { useAddSubCategoryMutation, useDeleteSubCategoryMutation, useGetAllSubCategoryQuery, useUpdateSubCategoryMutation } from "../../../api/sub_category";
 import {   SubCategoryResponseDetailsType } from "../../../types";
 import toast from "react-hot-toast";
 import ReactLoading from 'react-loading'
@@ -84,18 +84,26 @@ const [subcategories, setSubcategories] = useState<SubCategoryResponseDetailsTyp
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   // Handle editing a subcategory
+    const [updateCategory,{data:updateData,isSuccess:updateIsSuccess,isError:updateIsError,error:updateError,isLoading:updateIsLoading}]=useUpdateSubCategoryMutation()
+  useEffect(() => {
+    if (updateIsSuccess) {
+      setEditingId(null);
+      toast.success(updateData)
+      refetch()
+    }
+    if (updateIsError) {
+      if('data' in updateError) toast.error(updateError?.data as string)
+        console.log(updateError)
+    }
+  },[updateIsError,updateIsSuccess])
+
   const handleEdit = (id: string) => {
     setEditingId(id);
   };
 
   // Handle saving an edited subcategory
   const handleSave = (id: string, newName: string) => {
-    setSubcategories(
-      subcategories.map((subcategory) =>
-        subcategory.id === id ? { ...subcategory, name: newName } : subcategory
-      )
-    );
-    setEditingId(null);
+    updateCategory({id:id,subcategory:newName});
   };
 
 

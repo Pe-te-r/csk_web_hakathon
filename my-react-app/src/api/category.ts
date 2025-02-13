@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "./url";
-import { CategoryResponseType,CategoryResponseDetailsType} from "../types";
+import { CategoryResponseType,SubCategoryResponseDetailsType} from "../types";
 
 type CategoryRequestType={
   id?:string,
@@ -17,7 +17,7 @@ tagTypes: ["Category"],
         query: () => "/category",
         providesTags: ["Category"], 
     }),
-    getOneCategoryDetails: builder.query<CategoryResponseDetailsType, { id: string; subcategory?: boolean }>({
+    getOneCategoryDetails: builder.query<SubCategoryResponseDetailsType, { id: string; subcategory?: boolean }>({
         query: ({ id, subcategory=false}) => ({
             url:`/category/${id}?subcategory=${subcategory}`,
             providesTags: ["Category"], 

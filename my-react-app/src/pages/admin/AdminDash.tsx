@@ -4,7 +4,7 @@ import styles from "../../styles/AdminDash.module.scss";
 import AdminUsers from "./pages/AdminUsers";
 import ProductAdmin from "./pages/ProductAdmin";
 import CategoryPage from "./pages/AdminCategory";
-import SubcategoryPage from "./pages/SubcategoryPage";
+import SubcategoryPage from "./pages/AdminSubcategoryPage";
 import OrdersPage from "./pages/OrdersPage";
 
 const AdminDash = () => {

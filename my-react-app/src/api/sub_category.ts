@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { url } from "./url";
-import { CategoryResponseType,UpdateUserRequest } from "../types";
+import { SubCategoryResponseDetailsType,UpdateUserRequest } from "../types";
 
 
 export const subCategoryApi = createApi({
@@ -8,9 +8,27 @@ export const subCategoryApi = createApi({
 tagTypes: ["SubCategory"], 
   baseQuery: fetchBaseQuery({ baseUrl: url }),
   endpoints: (builder) => ({
-    getAllSubCategory: builder.query<CategoryResponseType[], void>({
-        query: () => "/subcategory",
-        providesTags: ["SubCategory"], 
+    deleteSubCategory: builder.mutation<string, { id: string }>({
+  query: ({ id }) => ({
+    url: `/subcategory/${id}`,
+    method: 'DELETE', 
+  }),
+}),
+    getAllSubCategory: builder.query<SubCategoryResponseDetailsType[], { category_name: boolean }>({
+      query: ({ category_name }) => ({
+        url: "/subcategory",
+        providesTags: ["SubCategory"],
+        params:{category_name}
+      })
+    }),
+    
+    addSubCategory: builder.mutation<string, {category_id:string,subcategory:string}>({
+      query: ({ ...updatedData }) => ({
+        url: `/subcategory`,
+        method: "POST",
+        body: updatedData,
+        }),
+        invalidatesTags: ["SubCategory"], 
     }),
     updateSubCategory: builder.mutation<string, UpdateUserRequest>({
       query: ({ id, ...updatedData }) => ({
@@ -20,8 +38,8 @@ tagTypes: ["SubCategory"],
         }),
         invalidatesTags: ["SubCategory"], 
     }),
-
+    
   }),
 });
 
-export const { useGetAllSubCategoryQuery,useUpdateSubCategoryMutation } = subCategoryApi;
+export const { useGetAllSubCategoryQuery,useUpdateSubCategoryMutation, useDeleteSubCategoryMutation,useAddSubCategoryMutation} = subCategoryApi;

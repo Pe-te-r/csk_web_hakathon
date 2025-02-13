@@ -43,12 +43,18 @@ export interface CategoryResponseType {
   category:string
 }
 
-export interface CategoryResponseDetailsType{
-  subcategories: {
-    id: string,
-    subcategory:string
-  }[]
+// export interface CategoryResponseDetailsType{
+//   subcategories: {
+//     id: string,
+//     subcategory?:string
+//   }[]
+// }
+export interface SubCategoryResponseDetailsType{
+  category: string,
+  id: string,
+  subcategory:string
 }
+
 
 
 

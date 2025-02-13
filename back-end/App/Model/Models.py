@@ -286,6 +286,12 @@ class SubCategory(db.Model):
             'id':str(self.id),
             'subcategory':self.sub_category
         }
+    
+    def update_name(self,name):
+        self.sub_category=name
+        db.session.add(self)
+        db.session.commit()
+        return True
     @classmethod
     def get_all(cls):
         return cls.query.all()
@@ -308,6 +314,11 @@ class SubCategory(db.Model):
     def get_by_name(cls,name):
         return cls.query.filter_by(sub_category=name).first()
     
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        return True
+
 # product
 class Product(db.Model):
     __tablename__='product'

@@ -6,6 +6,19 @@ subcategory_bp = Blueprint('subcategory_bp',__name__)
 api =Api(subcategory_bp)
 
 class SingleSubCategory(Resource):
+    def put(self,id):
+        try:
+            subcategory = SubCategory.get_by_id(id)
+            if not subcategory:
+                return 'subcategory not found',404
+            data = request.get_json()
+            if 'subcategory' in data and subcategory.update_name(data['subcategory']):
+                return 'subcategory was updated success',200
+            return 'subcategory not updated',400
+                
+        except Exception as e:
+            return f'erro occured {str(e)}'
+        # end try
     def get(self,id):
         try:
 
@@ -14,7 +27,22 @@ class SingleSubCategory(Resource):
                 return 'subcategory not found',404
         except Exception as e:
             return f'erro occured {str(e)}'
-
+            
+    def delete(self,id):
+        try:
+            subcategory = SubCategory.get_by_id(id)
+            if not subcategory:
+                return 'subcategory not found',404
+            print(subcategory.sub_category)
+            if subcategory.delete():
+                print('one')
+                return 'subcategory delete succses',200
+            print('two')
+            
+            return 'error occured',402
+            
+        except Exception as e:
+            return f'erro occured {str(e)}'
 class MultiSubCategory(Resource):
     def post(self):
         try:
@@ -44,12 +72,13 @@ class MultiSubCategory(Resource):
 
     def get(self):
         try:
-            include_orders = request.args.get("orders", "false").lower() == "true"
-            subcategories=SubCategory.get_all(category_name=include_orders)
+            include_orders = request.args.get("category_name", "false").lower() == "true"
+            print(include_orders)
+            subcategories=SubCategory.get_all()
             if not subcategories:
                 return 'no subcategory found',404
 
-            return [subcategory.to_json() for subcategory in subcategories] ,200
+            return [subcategory.to_json(category_name=include_orders) for subcategory in subcategories] ,200
         except Exception as e:
             return f'error occured {str(e)}',500
 api.add_resource(MultiSubCategory,'/subcategory')

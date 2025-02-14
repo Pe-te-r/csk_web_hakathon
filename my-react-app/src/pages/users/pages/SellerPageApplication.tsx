@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../styles/SellerPageApplication.module.scss'; // Import SCSS module
+import styles from '../../../styles/SellerPageApplication.module.scss'; // Import SCSS module
 
 const SellerPageApplication: React.FC = () => {
   // Static data for the seller application page

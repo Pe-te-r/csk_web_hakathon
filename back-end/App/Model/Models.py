@@ -223,6 +223,12 @@ class Password(db.Model):
         password=cls(user_id=data['id'],password=hashed_password)
         return password
 
+    def change_password(self,password):
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.password =hashed_password
+        db.session.add(self)
+        db.session.commit()
+        return True
 
 # category
 class Category(db.Model):

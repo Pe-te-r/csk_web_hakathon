@@ -39,50 +39,46 @@ class UserResource(Resource):
                 return "User not found", 404
 
             edited = False
-
+            print('zero')
             # Check if the request is JSON
             if request.content_type == "application/json":
                 data = request.get_json()
-            else:  # Assume it's FormData (multipart/form-data)
+            else: 
                 data = request.form
             
-            print('one')
-            # Handle common fields (text data)
             if "isActive" in data:
                 if not user_exists.update_user({"active": data["isActive"] == "true"}):
                     return 'action cannot be completed, try again later',500
                 edited = True
-            print('two')
 
             if "username" in data:
                 if not user_exists.update_user({"username": data["username"]}):
                     return 'error the username',500
                 edited = True
-            print('three')
 
             if "first_name" in data:
                 if not user_exists.update_user({"first_name": data["first_name"]}):
                     return 'error the firstname',500
                 edited = True
-            print('four')
-            print(request.files)
+            
+            if 'password' in data:
+                if not user_exists.password.change_password(data['password']):
+                    return 'error on the password',500
+                edited = True
+            print('one')
 
             if "img_path" in request.files:
-                print('here one')
                 file = request.files["img_path"]
-                print('here two')
                 img_path=get_img_url(file)
-                print('five')
-                print(img_path)
-                print('six')
                 if not user_exists.save_profile_photo(img_path):
                     return 'error the profile',500
                 edited = True
-            print('seven')
+            print('two')
 
             if edited:
                 return "User updated successfully", 200
 
+            print('thre')
             return "No data to update", 200
 
         except Exception as e:

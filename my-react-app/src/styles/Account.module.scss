@@ -157,12 +157,24 @@
         cursor: pointer;
         transition: background 0.3s;
     }
+    .sellerButton{
+    padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #186f7c;
+        cursor: pointer;
+    }
 
     .settingsButton {
         background-color: #17a2b8;
+        cursor: pointer;
         color: white;
     }
     .settingsButtonDisable{
+        padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         background-color: grey;
     }
 

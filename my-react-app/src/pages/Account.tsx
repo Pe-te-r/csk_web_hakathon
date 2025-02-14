@@ -44,19 +44,6 @@ const userRef = useRef(data);
 
   const navigate = useNavigate()
   // // Static Order History
-  // useEffect(() => {
-  //   setOrderHistory([
-  //     {
-  //       id: "ORD12345",
-  //       product: "Wireless Headphones",
-  //       price: 49.99,
-  //       img_path: "",
-  //       description: "Good for music",
-  //       sub_category: "Speakers",
-  //       quantity: 3,
-  //     },
-  //   ]);
-  // }, []);
 
   // Handle Profile Edit
   const handleEditProfile = () => {

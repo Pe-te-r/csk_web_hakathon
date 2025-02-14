@@ -6,6 +6,7 @@ import { useUser } from "./context/UserProvider";
 import { useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import ReactLoading from "react-loading";
+import { useUpdateUserFormMutation } from "../api/users";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -16,6 +17,22 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   isOpen,
   onClose,
 }) => {
+
+  const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateData,error:updateError,isSuccess:updateIsSuccess}] = useUpdateUserFormMutation()
+    useEffect(() => {
+    if (updateIsSuccess) {
+      toast.success(updateData)
+      refetch()
+      onClose();
+      resetState();
+    }
+    if (updateIsError) {
+      if('data' in updateError)toast.error(updateError?.data as string)
+    }
+    
+  },[updateIsError,updateIsSuccess])
+
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
@@ -89,10 +106,11 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   // Handle password submission
   const handleSubmit = () => {
-    console.log("Password being submitted:", newPassword);
-    toast.success("Password changed successfully!");
-    onClose();
-    resetState();
+    const formDataToSend = new FormData();
+    formDataToSend.append('id',getUser()?.userId|| ' ')
+    formDataToSend.append('password',newPassword)
+    updateUser(formDataToSend)
+
   };
 
   // Handle "Back" button click
@@ -195,13 +213,15 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           <button className={styles.backButton} onClick={handleClose}>
             Back
           </button>
+          {updateIsLoading ? <ReactLoading type="bars" color="#3498db" height={50} width={50} />  :
           <button
-            className={styles.submitButton}
-            onClick={handleSubmit}
-            disabled={!isSubmitEnabled}
+          className={styles.submitButton}
+          onClick={handleSubmit}
+          disabled={!isSubmitEnabled}
           >
             Submit
           </button>
+          }
         </div>
       </div>
     </div>

@@ -35,7 +35,7 @@ class JWTManager:
             decoded_token = jwt.decode(token, self.secret_key, algorithms=[self.algorithms])
             return decoded_token
         except jwt.ExpiredSignatureError:
-            raise ExpiredTokenError("Token has expired.")
+            raise ExpiredTokenError("Expired token.")
         except jwt.InvalidTokenError:
             raise InvalidTokenError("Invalid token.")
 

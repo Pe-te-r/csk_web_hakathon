@@ -119,7 +119,7 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     }
     if (isError) {
       if ('data' in error) {
-        const msg:{message:string} = error.data
+        const msg:{message:string} = error.data as {message:string}
         console.log(msg.message)
       }
     }

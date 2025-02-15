@@ -1,12 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { url } from "./url";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { SubCategoryResponseDetailsType } from "../types";
+import { baseQueryWithReAuth } from "./baseQuery";
 
 
 export const subCategoryApi = createApi({
   reducerPath: "subCategoryApi",
 tagTypes: ["SubCategory"], 
-  baseQuery: fetchBaseQuery({ baseUrl: url }),
+  baseQuery: baseQueryWithReAuth,
   endpoints: (builder) => ({
     deleteSubCategory: builder.mutation<string, { id: string }>({
   query: ({ id }) => ({

@@ -1,11 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { url } from "./url";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { ProductRequestType } from "../types";
+import { baseQueryWithReAuth } from "./baseQuery";
 
 export const productAPi = createApi({
   reducerPath: "productAPi",
   tagTypes: ["Product"],
-  baseQuery: fetchBaseQuery({ baseUrl: url }),
+  baseQuery: baseQueryWithReAuth,
   endpoints: (builder) => ({
     createProduct: builder.mutation<string, FormData>({
       query: (formData) => ({

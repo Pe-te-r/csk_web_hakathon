@@ -6,20 +6,6 @@ export const userApi = createApi({
   reducerPath: "userApi",
   tagTypes: ["Users"], 
   baseQuery:baseQueryWithReAuth,
-  // baseQuery: fetchBaseQuery({
-  //   baseUrl: url,
-  //   prepareHeaders: (headers) => {
-  //     // Retrieve token from localStorage
-  //     const user = localStorage.getItem("user");
-  //     const token = user ? JSON.parse(user).token : null;
-
-  //     if (token) {
-  //       headers.set("Authorization", `Bearer ${token}`);
-  //     }
-
-  //     return headers;
-  //   },
-  // }),
   endpoints: (builder) => ({
     getUsers: builder.query<UserResponseType[], void>({
       query: () => "/users",

@@ -1,6 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { url } from "./url";
+import { createApi, } from "@reduxjs/toolkit/query/react";
 import { CategoryResponseType,SubCategoryResponseDetailsType} from "../types";
+import { baseQueryWithReAuth } from "./baseQuery";
 
 type CategoryRequestType={
   id?:string,
@@ -11,7 +11,7 @@ type CategoryRequestType={
 export const categoryAPi = createApi({
   reducerPath: "categoryAPi",
 tagTypes: ["Category"], 
-  baseQuery: fetchBaseQuery({ baseUrl: url }),
+  baseQuery:baseQueryWithReAuth,
   endpoints: (builder) => ({
     getAllCategory: builder.query<CategoryResponseType[], void>({
         query: () => "/category",

@@ -9,7 +9,7 @@ import Account from "./pages/Account";
 import AboutUs from "./pages/AboutUs";
 import ProtectedRoute from "./components/context/ProtectedRoute";
 import SellerPageApplication from "./pages/users/pages/SellerPageApplication";
-import UserSideNav from "./pages/users/UserSIdeNav";
+import UserDash from "./pages/users/UserDash";
 
 const App = () => {
   return (
@@ -26,7 +26,7 @@ const App = () => {
           <Route path="/about" element={<AboutUs/>}/>
           <Route path="/application" element={<SellerPageApplication/>}/>
           <Route path="/admin/*"element={<ProtectedRoute><AdminDash /></ProtectedRoute>} />
-          <Route path="/dashboard/*"element={<ProtectedRoute><UserSideNav /></ProtectedRoute>} />
+          <Route path="/dashboard/*"element={<ProtectedRoute><UserDash /></ProtectedRoute>} />
         </Routes>
       </div>
     </Router>

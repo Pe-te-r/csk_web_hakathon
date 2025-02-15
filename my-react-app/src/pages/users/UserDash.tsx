@@ -2,8 +2,9 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import styles from "../../styles/AdminDash.module.scss";
 import Home from "./pages/Home";
 import UserSideNav from "./UserSIdeNav";
+import AdminProduct from "../admin/pages/ProductAdmin";
 
-const AdminDash = () => {
+const UserDash = () => {
   return (
     <div className={styles.home}>
       <div className={styles.sidebar}>
@@ -12,6 +13,7 @@ const AdminDash = () => {
       <div className={styles.content}>
         <Routes>
           <Route path="/" element={<Home/>} />
+          <Route path="/products" element={<AdminProduct/>} />
 
         </Routes>
         <Outlet />
@@ -20,4 +22,4 @@ const AdminDash = () => {
   );
 };
 
-export default AdminDash;
+export default UserDash;

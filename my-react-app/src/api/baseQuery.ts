@@ -3,13 +3,21 @@ import { url } from "./url";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: url,
-    prepareHeaders: (headers) => {
-        const user = localStorage.getItem("user");
-        const token = user ? JSON.parse(user).token : null;
-        if (token) {
+  prepareHeaders: (headers) => {
+    const user = localStorage.getItem("user");
+
+    if (!user) return headers; 
+
+    try {
+      const token = JSON.parse(user)?.token; 
+      if (token) {
         headers.set("Authorization", `Bearer ${token}`);
-        }
-        return headers;
+      }
+    } catch (error) {
+      console.error("Invalid user data in localStorage:", error);
+    }
+
+    return headers;
   },
 });
 

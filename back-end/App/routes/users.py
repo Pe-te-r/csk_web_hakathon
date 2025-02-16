@@ -1,4 +1,4 @@
-from flask import request, Blueprint
+from flask import g, request, Blueprint
 from flask_restful import Api,Resource
 from App.Model import User
 from App import jwt
@@ -17,7 +17,10 @@ class UserResource(Resource):
                     return  'user not found',404
                 
                 if not user.is_active():
-                    return'user is disabled',403
+                    return 'disabled',403
+                
+                if  user.get_role != 'admin' and user.email != g.user:
+                    return 'not authorized'
                 
                 include_orders = request.args.get("orders", "false").lower() == "true"
 
@@ -37,17 +40,24 @@ class UserResource(Resource):
             user_exists = User.get_user_by_id(user_id)
             if not user_exists:
                 return "User not found", 404
+            
+            if not user_exists.is_active():
+                return 'disabled',403
+            
+            if user_exists.email != g.user and user_exists.get_role != 'admin':
+                return 'not authorized'
+
 
             edited = False
-            print('zero')
-            # Check if the request is JSON
             if request.content_type == "application/json":
                 data = request.get_json()
             else: 
                 data = request.form
             
             if "isActive" in data:
-                if not user_exists.update_user({"active": data["isActive"] == "true"}):
+                print(data)
+                print(data['isActive'])
+                if not user_exists.update_user({"active": data["isActive"] }):
                     return 'action cannot be completed, try again later',500
                 edited = True
 
@@ -65,7 +75,11 @@ class UserResource(Resource):
                 if not user_exists.password.change_password(data['password']):
                     return 'error on the password',500
                 edited = True
-            print('one')
+            
+            if 'role' in data:
+                if not user_exists.update_user({'role':data['role']}):
+                    return 'error on role update',500
+                edited = True
 
             if "img_path" in request.files:
                 file = request.files["img_path"]
@@ -73,7 +87,6 @@ class UserResource(Resource):
                 if not user_exists.save_profile_photo(img_path):
                     return 'error the profile',500
                 edited = True
-            print('two')
 
             if edited:
                 return "User updated successfully", 200
@@ -95,6 +108,11 @@ class UsersResource(Resource):
     def get(self):
         try:
             users = User.all_users()
+            user_request = User.get_by_email(g.user)
+            if not user_request:
+                return 'this admin not found',404
+            if user_request.get_role != 'admin':
+                return 'not allowed'
             if not users:
                 return'no user found',404
             

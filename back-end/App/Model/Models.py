@@ -1,5 +1,5 @@
 import bcrypt
-from enum import Enum as PyEnum
+from enum import property, Enum as PyEnum
 from string import digits
 from random import choices
 from uuid import uuid4,UUID
@@ -65,13 +65,24 @@ class User(db.Model):
     def update_user(self, data):
         try:
             for key, value in data.items():
-                if hasattr(self, key): 
-                    setattr(self, key, value)
-            
+                if hasattr(self, key):
+                    if key == "role":
+                        if value not in [role.value for role in Role]:
+                            raise ValueError(f"Invalid role: {value}")
+                        setattr(self, key, Role(value)) 
+                    else:
+                        setattr(self, key, value)
+
             db.session.commit()
             return True
         except Exception:
+            db.session.rollback()
             return False
+    
+    @property
+    def get_role(self):
+        return self.role.value
+
     @classmethod
     def get_user_by_id(cls,id):
         return cls.query.filter_by(id=UUID(id)).first()

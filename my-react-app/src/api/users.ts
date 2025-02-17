@@ -47,3 +47,5 @@ updateUserForm: builder.mutation<string, FormData>({
 });
 
 export const { useGetUsersQuery, useUpdateUserMutation,useGetOneUserQuery,useUpdateUserFormMutation } = userApi;
+
+

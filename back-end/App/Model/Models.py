@@ -22,6 +22,7 @@ class User(db.Model):
     email=db.Column(db.String(100),nullable=False,unique=True)
     role=db.Column(db.Enum(Role),default= Role.BUYER,nullable=False)
     active = db.Column(db.Boolean,nullable=False,default=True)
+    phone=db.Column(db.String(10),nullable=True)
 
     
 

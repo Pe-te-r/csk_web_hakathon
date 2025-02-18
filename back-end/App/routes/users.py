@@ -80,6 +80,11 @@ class UserResource(Resource):
                 if not user_exists.update_user({'role':data['role']}):
                     return 'error on role update',500
                 edited = True
+            
+            if 'phone' in data:
+                if not user_exists.update_user({'phone':data['phone']}):
+                    return 'error on role update',500
+                edited = True
 
             if "img_path" in request.files:
                 file = request.files["img_path"]

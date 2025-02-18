@@ -1,7 +1,8 @@
-from flask import request,  Blueprint
+from flask import g, g, request,  Blueprint
 from flask_restful import Api,Resource
-from App.Model import Product,SubCategory
+from App.Model import Product,SubCategory,User
 from App.helpers import get_img_url
+from App import jwt
 
 
 product_bp=Blueprint('product_bp',__name__)
@@ -10,6 +11,7 @@ api =Api(product_bp)
 
 
 class MultiProduct(Resource):
+    method_decorators=[jwt.jwt_required]
     def post(self):
         try:
             if "image" not in request.files:
@@ -23,6 +25,10 @@ class MultiProduct(Resource):
             required_fields = [product_name, subcategory, price, description]
             if not all(required_fields):
                 return "Missing required product details", 409
+            
+            user = User.get_by_email(g.user)
+            if not user:
+                return  'user not found',404
 
             image = request.files["image"]
             
@@ -38,6 +44,7 @@ class MultiProduct(Resource):
                 "price": price,
                 "description": description,
                 "image": img_url,
+                
             }
             result = Product.add_product(product_data)
             if not result:

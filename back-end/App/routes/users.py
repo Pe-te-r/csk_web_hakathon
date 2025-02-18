@@ -66,6 +66,12 @@ class UserResource(Resource):
                     return 'error the username',500
                 edited = True
 
+            if 'business_name' in data:
+                if not user_exists.update_user({"business_name": data["business_name"]}):
+                    return 'error the username',500
+                edited = True
+
+
             if "first_name" in data:
                 if not user_exists.update_user({"first_name": data["first_name"]}):
                     return 'error the firstname',500

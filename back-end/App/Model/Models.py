@@ -31,6 +31,7 @@ class User(db.Model):
     password = db.Relationship('Password',backref='user',uselist=False)
     profilepic = db.Relationship('ProfilePic',backref='user',uselist=False)
     auth = db.Relationship('Auth',backref='user',uselist=False)
+    product = db.Relationship('Product',back_populates='user',uselist=True)
     def __repr__(self):
         return f'User({self.email} {self.username})'
     
@@ -345,11 +346,14 @@ class Product(db.Model):
     product = db.Column(db.String(100),nullable=False)
     img_path=db.Column(db.String(130),nullable=False)
     price = db.Column(db.Float,nullable=False,default=0.00)
+    owner=db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False)
+    bussiness_name=db.Column(db.String(80),nullable=False)
     description=db.Column(db.Text,nullable=False)
 
     # relationship
     subcategory=db.Relationship('SubCategory',back_populates='product',uselist=False)
     order=db.Relationship('Order',back_populates='product',uselist=True)
+    user = db.Relationship('User',back_populates='product',uselist=False)
 
     def to_json(self):
         return {

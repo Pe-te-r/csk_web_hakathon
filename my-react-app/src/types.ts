@@ -34,7 +34,9 @@ export interface UpdateUserRequest{
         first_name?: string,    
         isActive?: boolean,
   username?: string
-  img_path?:string
+  img_path?: string
+  phone?: string
+  business_name?:string
 
 }
 

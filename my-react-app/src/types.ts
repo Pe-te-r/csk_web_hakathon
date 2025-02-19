@@ -25,6 +25,7 @@ export interface UserResponseType{
   isActive: boolean,
   img_path?: string
   fa?: string | null
+  role:string
   orders?:[]|null
 
 }

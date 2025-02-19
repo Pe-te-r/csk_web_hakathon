@@ -227,7 +227,12 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         :
         <button className={styles.settingsButton} onClick={() => setIs2FAModalOpen(true)}>Enable 2F</button>
         }
+        {
+          userRef.current?.role === 'seller' ?
+          <button className={styles.settingsButton} onClick={()=>navigate('/dashboard')}>Seller Dashboard</button>
+           :
         <button className={styles.sellerButton} onClick={()=>navigate('/application')}>Apply Seller</button>
+        }
         <button className={styles.dangerButton}>Delete Account</button>
       </div>
 

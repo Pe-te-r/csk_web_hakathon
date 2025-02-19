@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from '../../../styles/SellerPageApplication.module.scss'; // Import SCSS module
 import { useUpdateUserFormMutation } from '../../../api/users';
 import toast from 'react-hot-toast';
+import ReactLoading from 'react-loading'
 import { useUser } from '../../../components/context/UserProvider';
+import { useNavigate } from 'react-router-dom';
 
 const SellerPageApplication: React.FC = () => {
   // Static data for the seller application page
@@ -20,11 +22,12 @@ const SellerPageApplication: React.FC = () => {
     "Use the platform's messaging system for communication.",
     "Report any suspicious activity to the Phantom Market support team.",
   ];
+  const navigate = useNavigate()
   const { getUser } = useUser()
   const userIdRef = useRef( getUser()?.userId || "");
   const [updateUser,{isLoading:updateIsLoading,isError:updateIsError,data:updateData,error:updateError,isSuccess:updateIsSuccess}] = useUpdateUserFormMutation()
 
-  const [details,setDetails]=useState<{id:string,phone:string,business_name:string,role:string}>({id:userIdRef.current,business_name:'',phone:'',role:'seller'})
+  const [details,setDetails]=useState<{id:string,phone:string,business_name:string,role:string}>({id:userIdRef.current || '',business_name:'',phone:'',role:'seller'})
 
 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const { name, value } = e.target;
@@ -43,8 +46,10 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   }
 
     useEffect(() => {
-    if (updateIsSuccess) {
+      if (updateIsSuccess) {
+      setDetails({id:'',phone:'',business_name:'',role:''})
       toast.success(updateData)
+      navigate('/dashboard')
     }
     if (updateIsError) {
       if('data' in updateError)toast.error(updateError?.data as string)
@@ -86,6 +91,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               type="tel"
               id="phone"
               name='phone'
+              value={details.phone}
               className={styles.input}
               placeholder="Enter your phone number"
               onChange={handleChange}
@@ -97,6 +103,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <input
               type="text"
               name='business_name'
+              value={details.business_name}
               id="businessName"
               className={styles.input}
               onChange={handleChange}
@@ -112,8 +119,12 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </p>
           </div>
 
-
+          {
+            updateIsLoading ?
+            <ReactLoading type="bars" color="#3498db" height={50} width={50} /> 
+              :
           <button type="submit" className={styles.submitButton}>Submit Application</button>
+            }
         </form>
       </div>
 

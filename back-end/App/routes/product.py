@@ -24,6 +24,7 @@ class MultiProduct(Resource):
             owner = request.form.get("owner")
 
             required_fields = [product_name, subcategory, price, description,owner]
+            print(owner)
             if not all(required_fields):
                 return "Missing required product details", 409
             
@@ -48,12 +49,14 @@ class MultiProduct(Resource):
                 "owner":owner
             }
             result = Product.add_product(product_data)
+            print(result)
             if not result:
                 return  "Product not saved", 409
 
             return  "Product added successfully", 201
         
         except Exception as e:
+            
             return  f"Error occurred: {str(e)}", 500
 
     

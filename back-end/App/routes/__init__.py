@@ -4,9 +4,12 @@ def register_bp(app):
     from App.routes.category import category_bp
     from App.routes.subcategory import subcategory_bp
     from App.routes.product import product_bp
+    from App.routes.orders import orders_bp
 
     app.register_blueprint(users_bp, url_prefix="/api")
     app.register_blueprint(product_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(category_bp, url_prefix="/api")
+    app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(subcategory_bp, url_prefix="/api")
+    app.register_blueprint(orders_bp, url_prefix="/api")

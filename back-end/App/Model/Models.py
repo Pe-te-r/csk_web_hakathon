@@ -23,8 +23,7 @@ class User(db.Model):
     role=db.Column(db.Enum(Role),default= Role.BUYER,nullable=False)
     active = db.Column(db.Boolean,nullable=False,default=True)
     phone=db.Column(db.String(10),nullable=True)
-
-    
+    bussiness_name = db.Column(db.String(80), nullable=True)
 
     # relationship
     order = db.Relationship('Order',back_populates='user',uselist=True)
@@ -217,7 +216,8 @@ class Order(db.Model):
     __tablename__='order'
     id = db.Column(db.UUID,primary_key=True)
     user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False)
-    product_id = db.Column(db.UUID,db.ForeignKey('product.id'),nullable=False)
+    total_amount=db.Column(db.Float,db.F)
+    products = db.Column(db.JSON,nullable=False)
 
     def to_json(self):
         return {
@@ -228,6 +228,33 @@ class Order(db.Model):
     # relation
     user = db.Relationship('User',back_populates='order',uselist=False)
     product = db.Relationship('Product',back_populates='order',uselist=False)
+
+    @classmethod    
+    def getAll(cls):
+        return cls.query.all()
+    
+    @classmethod
+    def add_order(cls,order):
+        products = order['products']
+        product_array=[]
+        total_amount=0
+        for product in products:
+            product_details= Product.get_by_id(product)
+            amount=product_details.price * int(product['quantity'])
+            total_amount += amount
+            item = {"product_id": str(product['product_id']),  "quantity": product['quantity'],'amount':amount,'owner':product_details.owner}
+            product_array.append(item)
+        
+
+        new_order = cls(
+            user_id=UUID(order['user_id']),
+            products=product_array,
+            total_amount=total_amount
+        )
+        db.session.add(new_order)
+        db.session.commit()
+        return True
+
 
 # password class
 class Password(db.Model):
@@ -352,7 +379,6 @@ class Product(db.Model):
     img_path=db.Column(db.String(130),nullable=False)
     price = db.Column(db.Float,nullable=False,default=0.00)
     owner=db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False)
-    bussiness_name=db.Column(db.String(80),nullable=False)
     description=db.Column(db.Text,nullable=False)
 
     # relationship
@@ -373,19 +399,21 @@ class Product(db.Model):
     @classmethod
     def add_product(cls, product):
         try:
+            print(product)
             new_product = cls(
                 id=uuid4(),
                 sub_category_id=product["subcategory_id"],
                 product=product["productName"],
-                img_path=product["image"],
+                img_path=product["image"][0],
                 price=float(product["price"]),  # Ensure float conversion
                 description=product["description"],
+                owner=UUID(product['owner'])
             )
-            print(new_product)
             db.session.add(new_product)
             db.session.commit()
             return True
-        except Exception :
+        except Exception  as e:
+            print(e)
             db.session.rollback()
             return False
     

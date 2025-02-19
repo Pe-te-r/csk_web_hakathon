@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "../../../styles/AdminProduct.module.scss";
 import ProductCard from "../../../components/ProductCard"; // Assuming you have a ProductCard component
@@ -6,6 +6,7 @@ import { useGetAllCategoryQuery, useGetOneCategoryDetailsQuery } from "../../../
 import ReactLoading from "react-loading";
 import { useCreateProductMutation } from "../../../api/product";
 import toast from "react-hot-toast";
+import { useUser } from "../../../components/context/UserProvider";
 
 const AdminProduct = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,8 @@ const AdminProduct = () => {
     image: null as File | null,
   });
 
+  const {getUser} = useUser()
+  const userRefId = useRef(getUser()?.userId || '')
   
   //categories
   const {data:categoryData,isSuccess:categoryIsSuccess,isError:categoryIsError,isLoading:categoryIsLoading}=useGetAllCategoryQuery()
@@ -41,8 +44,8 @@ const AdminProduct = () => {
       
       setSelectedCategory(value)
     }
- 
     setFormData((prev) => ({ ...prev, [name]: value }));
+ 
   };
 
 const handleImageChange =  (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +73,7 @@ const handleSubmit =  () => {
 
   try {
     const formDataToSend = new FormData();
+    formDataToSend.append("owner", userRefId.current);
     formDataToSend.append("productName", formData.productName);
     formDataToSend.append("category", formData.category);
     formDataToSend.append("subcategory", formData.subcategory);
@@ -103,7 +107,6 @@ const handleSubmit =  () => {
   // wait categories list
   useEffect(() => {
     if (categoryIsSuccess) {
-      console.log(categoryData)
       setCategories(categoryData)
     }
   },[categoryIsError,categoryIsSuccess])
@@ -111,9 +114,11 @@ const handleSubmit =  () => {
   // wait subcategoryies list
   useEffect(() => {
     if (subcategoryIsSuccess) {
-      console.log(subcategoryData.subcategories)
-      if (subcategoryData && Array.isArray(subcategoryData.subcategories)) {
-        setSubCategories(subcategoryData.subcategories)
+      console.log('down here')
+      console.log(subcategoryData)
+      if (subcategoryData && Array.isArray(subcategoryData)) {
+        setSelectedCategory('')
+        setSubCategories(subcategoryData)
 
       }
     }
@@ -121,7 +126,7 @@ const handleSubmit =  () => {
       // console.log(subcategoryError)
     }
     
-  },[subcategoryIsSuccess,subcategoryIsError])
+  },[subcategoryIsSuccess,subcategoryIsError,selectedCategory])
 
   useEffect(() => {
     if (productIsError) {

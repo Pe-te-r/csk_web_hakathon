@@ -71,6 +71,8 @@ class User(db.Model):
                     if key == "role":
                         if value not in [role.value for role in Role]:
                             raise ValueError(f"Invalid role: {value}")
+                        print(Role(value))
+                        print('data above')
                         setattr(self, key, Role(value)) 
                     else:
                         setattr(self, key, value)

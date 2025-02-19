@@ -55,8 +55,6 @@ class UserResource(Resource):
                 data = request.form
             
             if "isActive" in data:
-                print(data)
-                print(data['isActive'])
                 if not user_exists.update_user({"active": data["isActive"] }):
                     return 'action cannot be completed, try again later',500
                 edited = True
@@ -65,7 +63,7 @@ class UserResource(Resource):
                 if not user_exists.update_user({"username": data["username"]}):
                     return 'error the username',500
                 edited = True
-
+            print(data)
             if 'business_name' in data:
                 if not user_exists.update_user({"business_name": data["business_name"]}):
                     return 'error the username',500

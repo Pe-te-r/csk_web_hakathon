@@ -14,6 +14,8 @@ class SingleCategory(Resource):
             if not category:
                 return 'category not found',404
             subcategory = True if subcategory =='true' else False
+            print('above here')
+            print(category)
             return category.to_json(subcategory=subcategory), 200
         except Exception as e:
             return f'error occured {str(e)}' ,500

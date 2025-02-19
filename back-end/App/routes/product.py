@@ -21,8 +21,9 @@ class MultiProduct(Resource):
             subcategory = request.form.get("subcategory")
             price = request.form.get("price")
             description = request.form.get("description")
+            owner = request.form.get("owner")
 
-            required_fields = [product_name, subcategory, price, description]
+            required_fields = [product_name, subcategory, price, description,owner]
             if not all(required_fields):
                 return "Missing required product details", 409
             
@@ -44,7 +45,7 @@ class MultiProduct(Resource):
                 "price": price,
                 "description": description,
                 "image": img_url,
-                
+                "owner":owner
             }
             result = Product.add_product(product_data)
             if not result:

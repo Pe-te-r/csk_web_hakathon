@@ -44,6 +44,7 @@ class User(db.Model):
                 "email": self.email,
                 "fa": self.auth.enabled if self.auth else None,
                 "img_path": self.profilepic.img_path if self.profilepic else None,
+                'role':self.role.value
             }
         if owner and orders:
             print('am here')
@@ -55,12 +56,14 @@ class User(db.Model):
                 "fa": self.auth.enabled if self.auth else None,
                 'orders':[order.to_json() for order in self.order] if self.order else None,
                 "img_path": self.profilepic.img_path if self.profilepic else None,
+                'role':self.role.value
             }
 
         return{
             'id':str(self.id),
             'first_name':self.first_name,
             'isActive':self.active,
+            'role':self.role.value,
             'email':self.email
         }
 
@@ -256,7 +259,7 @@ class Category(db.Model):
 
     def to_json(self, subcategory=False):
         if subcategory:
-            return {"subcategories": [sub.to_json() for sub in self.subcategory]}
+            return  [sub.to_json() for sub in self.subcategory]
         return{
             'id':str(self.id),
             'category':self.category

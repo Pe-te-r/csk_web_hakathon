@@ -6,6 +6,7 @@ import ProductAdmin from "./pages/ProductAdmin";
 import CategoryPage from "./pages/AdminCategory";
 import SubcategoryPage from "./pages/AdminSubcategoryPage";
 import OrdersPage from "./pages/OrdersPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const AdminDash = () => {
   return (
@@ -15,7 +16,7 @@ const AdminDash = () => {
       </div>
       <div className={styles.content}>
         <Routes>
-          <Route path="/" element={<div>Welcome to the Admin Home</div>} />
+          <Route path="/" element={<AdminDashboard/>} />
           <Route path="/users" element={<AdminUsers/>} />
           <Route path="/category" element={<CategoryPage/>} />
           <Route path="/products" element={<ProductAdmin/>} />

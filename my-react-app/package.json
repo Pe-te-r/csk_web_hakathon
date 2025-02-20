@@ -20,6 +20,7 @@
     "react-loading": "^2.0.3",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5",
+    "recharts": "^2.15.1",
     "use-local-storage-state": "^19.5.0"
   },
   "devDependencies": {

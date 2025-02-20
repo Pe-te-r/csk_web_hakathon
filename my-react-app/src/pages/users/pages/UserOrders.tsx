@@ -75,7 +75,6 @@ const UserOrders: React.FC = () => {
             Object.entries(groupedOrders).map(([orderId, orders]) => (
               <React.Fragment key={orderId}>
                     {orders.map((order, index) => (
-                    <>
                   <tr key={order.item.product_id}>
                     {index === 0 && (
                       <td rowSpan={orders.length}>{order.order_id}</td>
@@ -89,7 +88,6 @@ const UserOrders: React.FC = () => {
                     <td>{order.item.quantity}</td>
                     <td>${order.item.amount.toFixed(2)}</td>
                             </tr>
-                </>
                 ))}
               </React.Fragment>
             ))}

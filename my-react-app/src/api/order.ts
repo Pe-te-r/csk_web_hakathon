@@ -17,9 +17,9 @@ export const ordersApi = createApi({
       }),
        getAllUserOrders: builder.query({
       query: ({ userId, role }) => {
-        let url = `/orders?userId=${userId}`;
+        let url = `/orders/${userId}`;
         if (role) {
-          url += `&role=${role}`;
+          url += `?role=${role}`;
         }
         return url;
       },

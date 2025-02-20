@@ -10,6 +10,5 @@ def register_bp(app):
     app.register_blueprint(product_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(category_bp, url_prefix="/api")
-    app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(subcategory_bp, url_prefix="/api")
     app.register_blueprint(orders_bp, url_prefix="/api")

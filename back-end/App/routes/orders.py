@@ -3,7 +3,7 @@ from flask_restful import Api,Resource
 from App.Model import Order
 
 orders_bp=Blueprint('orders_bp',__name__)
-api=Api()
+api=Api(orders_bp)
 
 class OrdersMuti(Resource):
     def get(self):
@@ -21,19 +21,22 @@ class OrdersMuti(Resource):
             if not request.is_json:
                 return  "Content-type must be JSON", 400
             data = request.get_json()
+            print(data)
 
             # verify fields
             required_fields = ["user_id", "products"]
             for field in required_fields:
                 if field not in data:
                     return  f"missing field {field}", 400 
+            print('three')
             
             if not isinstance(data['products'], list) or len(data['products']) == 0:
                 return  "Products mustfor be a non-empty list", 400
-            
+            print('one')
             for product in data['products']:
                 if 'product_id' not in product or 'quantity' not in product:
                     return  "Each product must have 'product_id' and 'quantity'", 400
+            print('two')
             
             result= Order.add_order(data)
 

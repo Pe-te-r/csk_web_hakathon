@@ -214,10 +214,10 @@ class ProfilePic(db.Model):
 
 class Order(db.Model):
     __tablename__='order'
-    id = db.Column(db.UUID,primary_key=True)
+    id = db.Column(db.UUID,primary_key=True,default=uuid4())
     user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False)
-    total_amount=db.Column(db.Float,db.F)
     products = db.Column(db.JSON,nullable=False)
+    total_amount=db.Column(db.Float)
 
     def to_json(self):
         return {
@@ -227,7 +227,7 @@ class Order(db.Model):
 
     # relation
     user = db.Relationship('User',back_populates='order',uselist=False)
-    product = db.Relationship('Product',back_populates='order',uselist=False)
+    # product = db.Relationship('Product',back_populates='order',uselist=False)
 
     @classmethod    
     def getAll(cls):
@@ -239,14 +239,25 @@ class Order(db.Model):
         product_array=[]
         total_amount=0
         for product in products:
-            product_details= Product.get_by_id(product)
+            print(product['product_id'])
+            print("six")
+            product_details= Product.get_by_id(product['product_id'])
+            print("five")
+            print(product_details)
+            if not product_details:
+                return 'product nor found'
+            print('seven')
             amount=product_details.price * int(product['quantity'])
             total_amount += amount
-            item = {"product_id": str(product['product_id']),  "quantity": product['quantity'],'amount':amount,'owner':product_details.owner}
+            item = {"product_id": str(product['product_id']),  "quantity": product['quantity'],'amount':amount,'owner':str(product_details.owner)}
+            print(item)
             product_array.append(item)
         
-
+        print('eight')
+        print(product_array)
+        print(total_amount)
         new_order = cls(
+            id=uuid4(),
             user_id=UUID(order['user_id']),
             products=product_array,
             total_amount=total_amount
@@ -383,7 +394,6 @@ class Product(db.Model):
 
     # relationship
     subcategory=db.Relationship('SubCategory',back_populates='product',uselist=False)
-    order=db.Relationship('Order',back_populates='product',uselist=True)
     user = db.Relationship('User',back_populates='product',uselist=False)
 
     def to_json(self):

@@ -1,6 +1,6 @@
 from flask import request, Blueprint
 from flask_restful import Api,Resource
-from App.Model import Order
+from App.Model import Order,OrderItem
 
 orders_bp=Blueprint('orders_bp',__name__)
 api=Api(orders_bp)
@@ -12,7 +12,7 @@ class OrdersMuti(Resource):
             if not orders:
                 return 'no order found',404
             
-            return [order.to_json()for order in orders]
+            return [order.to_json(admin=True)for order in orders]
         except Exception as e:
             return f"Error occurred: {str(e)}", 500
     
@@ -58,6 +58,19 @@ class OrdersSingle(Resource):
                 return 'order not found',404
             order.delete()
             return 'delete was success'
+        except Exception as e:
+            return f"Error occurred: {str(e)}", 500
+    
+    def get(self,id):
+        try:
+            print(id)
+            role = request.args.get('role')
+            print(role)
+            if role ==  'seller':
+                orders = OrderItem.get_by_owner_id(id)
+                if not orders:
+                    return 'no order found',404
+                return [order.to_json(seller=True) for order in orders]
         except Exception as e:
             return f"Error occurred: {str(e)}", 500
 api.add_resource(OrdersMuti,'/orders')

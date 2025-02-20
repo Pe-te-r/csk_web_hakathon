@@ -93,8 +93,9 @@ class UserResource(Resource):
             if "img_path" in request.files:
                 file = request.files["img_path"]
                 img_path=get_img_url(file)
-                if not user_exists.save_profile_photo(img_path):
+                if not user_exists.save_profile_photo(img_path[0]):
                     return 'error the profile',500
+                print('over')
                 edited = True
 
             if edited:
@@ -104,6 +105,7 @@ class UserResource(Resource):
             return "No data to update", 200
 
         except Exception as e:
+            print(e)
             return f"Error occurred: {str(e)}", 500
 
 

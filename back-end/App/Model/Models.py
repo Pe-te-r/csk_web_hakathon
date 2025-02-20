@@ -54,7 +54,7 @@ class User(db.Model):
                 "isActive": self.active,
                 "email": self.email,
                 "fa": self.auth.enabled if self.auth else None,
-                'orders':[order.to_json() for order in self.order] if self.order else None,
+                'orders':[order.to_json(owner=True) for order in self.order] if self.order else None,
                 "img_path": self.profilepic.img_path if self.profilepic else None,
                 'role':self.role.value
             }
@@ -99,18 +99,24 @@ class User(db.Model):
     
     def save_profile_photo(self, img_path):
         try:
+            print('zero')
             existing_profile = ProfilePic.query.filter_by(user_id=self.id).first()
-            
+            print('one')
             if existing_profile:
                 existing_profile.img_path = img_path 
+                print('two')
             else:
                 profile = ProfilePic(user_id=self.id, img_path=img_path)
+                print('three')
                 db.session.add(profile)
+            print('four')
             
             db.session.commit()
             return True
         
-        except Exception:
+        except Exception as e:
+            print(e)
+            print('above')
             db.session.rollback()
             return False
     @classmethod
@@ -222,17 +228,43 @@ class Order(db.Model):
 
      # relation
     user = db.Relationship('User',back_populates='order',uselist=False)
-    orderitem=db.Relationship('OrderItem',back_populates='order',uselist=True)
+    orderitem = db.relationship('OrderItem', back_populates='order', uselist=True, cascade='all, delete-orphan')
+    def to_json(self,owner=False,admin=False):
+        if admin:
+            return{
+                'order_id':str(self.id),
+                'total':self.total_amount,
+                'buyer':{
+                    'name':self.user.first_name,
+                    'email':self.user.email,
+                    'phone':self.user.phone
+                },
+                'seller':{
+                    'name':self.orderitem.owner.first_name,
+                    'email':self.orderitem.owner.email,
+                    'phone':self.orderitem.owner.phone
 
-    def to_json(self):
+                },
+                'product':[
+                    {'produdct':item.product.product,'amount':item.product.amount,'quantity':item.product.quantity} for item in self.orderitem
+                ]
+
+            }
+        if owner:
+            return {
+                "id": str(self.id),
+                "total_amount": self.total_amount,
+                "products": [item.to_json(owner=True) for item in self.orderitem],
+            }
         return {
             "id": str(self.id),
+            "total_amount":self.total_amount,
             'buyer':{
                 'email':self.user.email,
                 'phone':self.user.phone,
                 'first_name':self.user.first_name,
             },
-            "products":[item.to_json() for item in self.orderitem],
+            "products":[item.to_json(owner=True) for item in self.orderitem],
         }
 
     def delete(self):
@@ -298,8 +330,22 @@ class OrderItem(db.Model):
     owner = db.Relationship('User',back_populates='orderitem',uselist=False)
     product = db.Relationship('Product',back_populates='orderitem',uselist=False)
 
-    def to_json(self):
-        if self.owner  is not None:
+    def to_json(self,owner=False,seller=False):
+        if seller:
+            return {
+                "order_id": str(self.order.id),
+                "buyer": {
+                    "name": self.order.user.first_name,
+                    "email": self.order.user.email,
+                },
+                "item": {
+                    "product_id": str(self.product_id),
+                    "quantity": self.quantity,
+                    "product": self.product.product,
+                    "amount": self.amount,
+                },
+            }
+        if not self.owner:
             return {
                 'seller':{
                 'email':self.owner.email,
@@ -309,10 +355,19 @@ class OrderItem(db.Model):
                 'product':{
                     'product_id':str(self.product_id),
                     'product_name':self.product.product,
-                    'quantity':self.quantity
+                    'quantity':self.quantity,
                 }
             }
-
+        return {
+            "product_id": str(self.product_id),
+            'img_url':self.product.img_path,
+            "product_name": self.product.product,
+            "quantity": self.quantity,
+            'price':self.amount
+        }
+    @classmethod
+    def get_by_owner_id(cls,id):
+        return cls.query.filter_by(owner_id=UUID(id))
     @classmethod
     def add_item(cls,orderItem):
         return cls(id=orderItem['id'],product_id=orderItem['product_id'],amount=orderItem['amount'],quantity=orderItem['quantity'],order_id=orderItem['order_id'],owner_id=orderItem['owner_id'])

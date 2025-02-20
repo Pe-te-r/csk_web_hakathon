@@ -11,4 +11,5 @@ def get_img_url(image):
     img_url = (
         response.json()["data"]["url"],
     )
+    print(img_url)
     return img_url

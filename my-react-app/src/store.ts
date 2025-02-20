@@ -5,6 +5,7 @@ import { productAPi } from "./api/product";
 import { userApi } from "./api/users";
 import { codeApi } from "./api/code";
 import { subCategoryApi } from "./api/sub_category";
+import { ordersApi } from "./api/order";
 
 export const store = configureStore({
   reducer: {
@@ -13,10 +14,11 @@ export const store = configureStore({
     [categoryAPi.reducerPath]: categoryAPi.reducer,
     [productAPi.reducerPath]:productAPi.reducer,
     [codeApi.reducerPath]:codeApi.reducer,
-    [subCategoryApi.reducerPath]:subCategoryApi.reducer
+    [subCategoryApi.reducerPath]:subCategoryApi.reducer,
+    [ordersApi.reducerPath]:ordersApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware,userApi.middleware,categoryAPi.middleware,subCategoryApi.middleware,productAPi.middleware,codeApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware,userApi.middleware,ordersApi.middleware,categoryAPi.middleware,subCategoryApi.middleware,productAPi.middleware,codeApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

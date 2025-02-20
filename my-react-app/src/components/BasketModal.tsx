@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../styles/BasketModal.module.scss";
 import { useBasketStorage } from "../hooks/useBasketStorage";
+import { useUser } from "./context/UserProvider";
 
 interface BasketModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface BasketModalProps {
 
 const BasketModal: React.FC<BasketModalProps> = ({ isOpen, onClose }) => {
   const { basket, updateBasket, removeFromBasket, clearBasket } = useBasketStorage();
+  const {getUser}=useUser()
   if (!isOpen) return null;
 
   const totalPrice = basket.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -23,11 +25,19 @@ const BasketModal: React.FC<BasketModalProps> = ({ isOpen, onClose }) => {
 
   const printDetails = () => {
     console.clear();
+    const items:{product_id:string,quantity:number}[]=[]
     console.log("--- Basket Details ---");
     basket.forEach((item) => {
       console.log(`ID: ${item.id}, Quantity: ${item.quantity}`);
+      // const info = {'product_id':item.id,'quantity':item.quantity}
+      const info:{product_id:string,quantity:number} ={'product_id':item.id,'quantity':item.quantity}
+      items.push(info)
     });
-    console.log(`Total Price: $${totalPrice.toFixed(2)}`);
+    const data = {
+      'user_id': getUser()?.userId,
+      'products':items
+    }
+    console.log(data);
   };
 
   return (

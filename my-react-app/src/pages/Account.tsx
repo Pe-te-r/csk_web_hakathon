@@ -203,7 +203,7 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                 <div key={order.id} className={styles.itemCard}>
                   <img src={order.img_path} alt={order.product} className={styles.itemImage} />
                   <p>{order.product}</p>
-                  <p>${order.price.toFixed(2)}</p>
+                  <p>${order.price}</p>
                 </div>
               ))}
             </div>

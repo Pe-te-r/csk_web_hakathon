@@ -272,14 +272,14 @@ class Order(db.Model):
                 item = {"product_id": UUID(product['product_id']),  "quantity": product['quantity'],'amount':amount,'order_id':new_order.id,'id':uuid4(),'owner_id':product_details.owner}
                 try:
                     orderItem=OrderItem.add_item(item)
-                    print('phantom')
                     db.session.add(orderItem)
                     db.session.commit()
-                    print(orderItem)
                 except Exception as e:
                     print(e)
                     db.session.rollback()
                     return False
+            new_order.total_amount=total_amount
+            db.session.commit()
             return True
         except Exception as e:
             print(e)

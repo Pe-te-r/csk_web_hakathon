@@ -3,6 +3,7 @@ import styles from "../../styles/AdminDash.module.scss";
 import Home from "./pages/Home";
 import UserSideNav from "./UserSIdeNav";
 import AdminProduct from "../admin/pages/ProductAdmin";
+import UserOrders from "./pages/UserOrders";
 
 const UserDash = () => {
   return (
@@ -14,6 +15,7 @@ const UserDash = () => {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/products" element={<AdminProduct/>} />
+          <Route path="/orders" element={<UserOrders/>} />
 
         </Routes>
         <Outlet />

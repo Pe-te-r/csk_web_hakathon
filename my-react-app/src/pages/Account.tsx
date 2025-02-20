@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "../styles/Account.module.scss";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useBasketStorage } from "../hooks/useBasketStorage";
-import { ProductRequestType } from "../types";
 import ReactLoading from 'react-loading'
 import { useUser } from "../components/context/UserProvider";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +9,7 @@ import { useGetOneUserQuery, useUpdateUserFormMutation } from "../api/users";
 import toast from "react-hot-toast";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import TwoFAModal from "../components/TwoFAModal";
+import OrderHistory from "../components/OrderHistory";
 
 
 const Account: React.FC = () => {
@@ -40,7 +40,7 @@ const userRef = useRef(data);
 };
   const { basket, clearBasket, updateBasket, removeFromBasket } = useBasketStorage();
   const [isEditing, setIsEditing] = useState(false);
-  const [orderHistory, setOrderHistory] = useState<ProductRequestType[]>([]);
+  const [orderHistory, setOrderHistory] = useState([]);
 
   const navigate = useNavigate()
   // // Static Order History
@@ -130,6 +130,7 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       refetch()
     }
     if (updateIsError) {
+      console.log(updateError)
       if('data' in updateError)toast.error(updateError?.data as string)
     }
     
@@ -194,7 +195,10 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       </div>
 
       {/* Order History */}
-      <div className={styles.section}>
+      {orderHistory&&
+      <OrderHistory handleClearHistory={handleClearHistory} orderHistory={orderHistory}/>
+      }
+      {/* <div className={styles.section}>
         <h3>Order History</h3>
         {orderHistory.length > 0 ? (
           <>
@@ -214,7 +218,7 @@ const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         ) : (
           <p>No order history available</p>
         )}
-      </div>
+      </div> */}
 
       {/* Account Settings */}
       <div className={styles.accountSettings}>

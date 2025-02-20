@@ -84,7 +84,7 @@ const [subcategories, setSubcategories] = useState<SubCategoryResponseDetailsTyp
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   // Handle editing a subcategory
-    const [updateCategory,{data:updateData,isSuccess:updateIsSuccess,isError:updateIsError,error:updateError,isLoading:updateIsLoading}]=useUpdateSubCategoryMutation()
+    const [updateCategory,{data:updateData,isSuccess:updateIsSuccess,isError:updateIsError,error:updateError}]=useUpdateSubCategoryMutation()
   useEffect(() => {
     if (updateIsSuccess) {
       setEditingId(null);

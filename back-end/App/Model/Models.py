@@ -231,6 +231,11 @@ class Order(db.Model):
     orderitem = db.relationship('OrderItem', back_populates='order', uselist=True, cascade='all, delete-orphan')
     def to_json(self,owner=False,admin=False):
         if admin:
+            product_item=[]
+            for item in self.orderitem:
+                product_item.append({
+                'seller':{'name':item.owner.first_name,'email':item.owner.email,'phone':item.owner.phone},
+                'product':{'product':item.product.product,'quantity':item.quantity,'amount':item.amount}})
             return{
                 'order_id':str(self.id),
                 'total':self.total_amount,
@@ -239,15 +244,7 @@ class Order(db.Model):
                     'email':self.user.email,
                     'phone':self.user.phone
                 },
-                'seller':{
-                    'name':self.orderitem.owner.first_name,
-                    'email':self.orderitem.owner.email,
-                    'phone':self.orderitem.owner.phone
-
-                },
-                'product':[
-                    {'produdct':item.product.product,'amount':item.product.amount,'quantity':item.product.quantity} for item in self.orderitem
-                ]
+                'product':product_item
 
             }
         if owner:

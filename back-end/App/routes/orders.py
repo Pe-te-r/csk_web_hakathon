@@ -50,4 +50,15 @@ class OrdersMuti(Resource):
         except Exception as e:
             return f"Error occurred: {str(e)}", 500
     
+class OrdersSingle(Resource):
+    def delete(self,id):
+        try:
+            order = Order.get_by_id(id)
+            if not order:
+                return 'order not found',404
+            order.delete()
+            return 'delete was success'
+        except Exception as e:
+            return f"Error occurred: {str(e)}", 500
 api.add_resource(OrdersMuti,'/orders')
+api.add_resource(OrdersSingle,'/orders/<string:id>')

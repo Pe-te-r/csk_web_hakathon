@@ -27,6 +27,7 @@ class User(db.Model):
 
     # relationship
     order = db.Relationship('Order',back_populates='user',uselist=True)
+    orderitem = db.Relationship('OrderItem',back_populates='owner',uselist=True)
     password = db.Relationship('Password',backref='user',uselist=False)
     profilepic = db.Relationship('ProfilePic',backref='user',uselist=False)
     auth = db.Relationship('Auth',backref='user',uselist=False)
@@ -216,18 +217,31 @@ class Order(db.Model):
     __tablename__='order'
     id = db.Column(db.UUID,primary_key=True,default=uuid4())
     user_id = db.Column(db.UUID,db.ForeignKey('user.id'),nullable=False)
-    products = db.Column(db.JSON,nullable=False)
+
     total_amount=db.Column(db.Float)
+
+     # relation
+    user = db.Relationship('User',back_populates='order',uselist=False)
+    orderitem=db.Relationship('OrderItem',back_populates='order',uselist=True)
 
     def to_json(self):
         return {
-            "id":str(self.id),
-            "product":self.product.to_json(),
+            "id": str(self.id),
+            'buyer':{
+                'email':self.user.email,
+                'phone':self.user.phone,
+                'first_name':self.user.first_name,
+            },
+            "products":[item.to_json() for item in self.orderitem],
         }
 
-    # relation
-    user = db.Relationship('User',back_populates='order',uselist=False)
-    # product = db.Relationship('Product',back_populates='order',uselist=False)
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def get_by_id(cls,id):
+        return cls.query.filter_by(id=UUID(id)).first()
 
     @classmethod    
     def getAll(cls):
@@ -235,36 +249,75 @@ class Order(db.Model):
     
     @classmethod
     def add_order(cls,order):
-        products = order['products']
-        product_array=[]
-        total_amount=0
-        for product in products:
-            print(product['product_id'])
-            print("six")
-            product_details= Product.get_by_id(product['product_id'])
-            print("five")
-            print(product_details)
-            if not product_details:
-                return 'product nor found'
-            print('seven')
-            amount=product_details.price * int(product['quantity'])
-            total_amount += amount
-            item = {"product_id": str(product['product_id']),  "quantity": product['quantity'],'amount':amount,'owner':str(product_details.owner)}
-            print(item)
-            product_array.append(item)
-        
-        print('eight')
-        print(product_array)
-        print(total_amount)
-        new_order = cls(
-            id=uuid4(),
-            user_id=UUID(order['user_id']),
-            products=product_array,
-            total_amount=total_amount
-        )
-        db.session.add(new_order)
-        db.session.commit()
-        return True
+        try:
+            products = order['products']
+            total_amount=0
+
+            new_order = cls(
+                id=uuid4(),
+                user_id=UUID(order['user_id']),
+                total_amount=total_amount
+            )
+            db.session.add(new_order)
+            db.session.commit()
+            db.session.refresh(new_order)
+            print(new_order)
+
+            for product in products:
+                product_details= Product.get_by_id(product['product_id'])
+                if not product_details:
+                    return 'product nor found'
+                amount=product_details.price * int(product['quantity'])
+                total_amount += amount
+                item = {"product_id": UUID(product['product_id']),  "quantity": product['quantity'],'amount':amount,'order_id':new_order.id,'id':uuid4(),'owner_id':product_details.owner}
+                try:
+                    orderItem=OrderItem.add_item(item)
+                    print('phantom')
+                    db.session.add(orderItem)
+                    db.session.commit()
+                    print(orderItem)
+                except Exception as e:
+                    print(e)
+                    db.session.rollback()
+                    return False
+            return True
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return False
+class OrderItem(db.Model):
+    __tablename__='orderitem'
+    id = db.Column(db.UUID,primary_key=True)
+    product_id = db.Column(db.UUID,db.ForeignKey('product.id'))
+    order_id = db.Column(db.UUID,db.ForeignKey('order.id'))
+    owner_id = db.Column(db.UUID,db.ForeignKey('user.id'))
+    quantity=db.Column(db.Integer,nullable=False)
+    amount=db.Column(db.Float,nullable=False)
+
+    order = db.Relationship('Order',back_populates='orderitem',uselist=False)
+    owner = db.Relationship('User',back_populates='orderitem',uselist=False)
+    product = db.Relationship('Product',back_populates='orderitem',uselist=False)
+
+    def to_json(self):
+        if self.owner  is not None:
+            return {
+                'seller':{
+                'email':self.owner.email,
+                'phone':self.owner.phone,
+                'first_name':self.owner.first_name
+                },
+                'product':{
+                    'product_id':str(self.product_id),
+                    'product_name':self.product.product,
+                    'quantity':self.quantity
+                }
+            }
+
+    @classmethod
+    def add_item(cls,orderItem):
+        return cls(id=orderItem['id'],product_id=orderItem['product_id'],amount=orderItem['amount'],quantity=orderItem['quantity'],order_id=orderItem['order_id'],owner_id=orderItem['owner_id'])
+
+
 
 
 # password class
@@ -395,6 +448,7 @@ class Product(db.Model):
     # relationship
     subcategory=db.Relationship('SubCategory',back_populates='product',uselist=False)
     user = db.Relationship('User',back_populates='product',uselist=False)
+    orderitem = db.Relationship('OrderItem',back_populates='product',uselist=True)
 
     def to_json(self):
         return {

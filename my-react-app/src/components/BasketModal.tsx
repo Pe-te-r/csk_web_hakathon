@@ -1,18 +1,32 @@
-import React from "react";
+import React, { useState } from 'react';
 import styles from "../styles/BasketModal.module.scss";
 import { useBasketStorage } from "../hooks/useBasketStorage";
 import { useUser } from "./context/UserProvider";
+import UserBuy from '../pages/users/pages/UserBuy'
 
 interface BasketModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+interface ProductOrderDetails{
+  product_id: string;
+  price: number;
+  quantity: number;
+  product: string;
+}
+
+interface ProductOrderRequest{
+  user_id:string;
+  products:ProductOrderDetails[];
+}
 
 const BasketModal: React.FC<BasketModalProps> = ({ isOpen, onClose }) => {
   const { basket, updateBasket, removeFromBasket, clearBasket } = useBasketStorage();
-  const {getUser}=useUser()
-  if (!isOpen) return null;
+  const { getUser } = useUser();
+  const [showBuyPage, setShowBuyPage] = useState(false);
+  const [buyData, setBuyData] = useState<ProductOrderRequest>({user_id:"",products:[]});
 
+  if (!isOpen) return null;
   const totalPrice = basket.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const updateQuantity = (id: string | number, newQuantity: number) => {
@@ -25,20 +39,39 @@ const BasketModal: React.FC<BasketModalProps> = ({ isOpen, onClose }) => {
 
   const printDetails = () => {
     console.clear();
-    const items:{product_id:string,quantity:number}[]=[]
+    const items: { product_id: string, quantity: number, product: string, price: number }[] = [];
     console.log("--- Basket Details ---");
+
+    if (!basket || basket.length === 0) {
+      console.error("Basket is empty or not defined");
+      return;
+    }
+
     basket.forEach((item) => {
       console.log(`ID: ${item.id}, Quantity: ${item.quantity}`);
-      // const info = {'product_id':item.id,'quantity':item.quantity}
-      const info:{product_id:string,quantity:number} ={'product_id':item.id,'quantity':item.quantity}
-      items.push(info)
+      const info = { product_id: item.id, quantity: item.quantity, product: item.product, price: item.price };
+      items.push(info);
     });
-    const data = {
-      'user_id': getUser()?.userId,
-      'products':items
+
+    const userId = getUser()?.userId;
+    if (!userId) {
+      console.error("User ID is not defined");
+      return;
     }
+
+    const data = {
+      user_id: userId,
+      products: items
+    };
+
     console.log(data);
+    setBuyData(data);
+    setShowBuyPage(true);
   };
+
+  if (showBuyPage && buyData) {
+    return <UserBuy data={buyData} />;
+  }
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>

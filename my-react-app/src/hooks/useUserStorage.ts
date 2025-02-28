@@ -6,6 +6,7 @@ const STORAGE_KEY = "user";
 interface UserStorageType {
   token: string;
   userId: string;
+  role:string
 }
 
 export function useUserStorage() {
@@ -16,8 +17,8 @@ export function useUserStorage() {
   );
 
   // Set user with token and userId
-  const saveUser = (token: string, userId: string) => {
-    setUser({ token, userId });
+  const saveUser = (token: string, userId: string,role:string) => {
+    setUser({ token, userId,role });
   };
 
   // Update only the token

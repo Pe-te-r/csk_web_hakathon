@@ -2,10 +2,10 @@ import { createContext, useContext, ReactNode } from "react";
 import { useUserStorage } from "../../hooks/useUserStorage";
 // Define the context type
 interface UserContextType {
-  user: { token: string; userId: string } | null;
-  saveUser: (token: string, userId: string) => void;
+  user: { token: string; userId: string,role:string} | null;
+  saveUser: (token: string, userId: string,role:string) => void;
   updateToken: (newToken: string) => void;
-  getUser: () => { token: string; userId: string } | null;
+  getUser: () => { token: string; userId: string,role:string } | null;
   deleteUser: () => void;
 }
 

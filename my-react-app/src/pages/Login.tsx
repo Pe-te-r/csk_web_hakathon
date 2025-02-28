@@ -46,7 +46,7 @@ const LoginForm: React.FC = () => {
   useEffect(() => {
     if (isSuccess) {
         console.log(data)
-        saveUser(data.token,data.id)
+        saveUser(data.token,data.id,data.role)
       toast.success("Login successful");
       navigate(from, { replace: true });
     }

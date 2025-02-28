@@ -25,8 +25,8 @@ const App = () => {
           <Route path="/account"element={<ProtectedRoute><Account /></ProtectedRoute>}/>
           <Route path="/about" element={<AboutUs/>}/>
           <Route path="/application" element={<SellerPageApplication/>}/>
-          <Route path="/admin/*"element={<ProtectedRoute><AdminDash /></ProtectedRoute>} />
-          <Route path="/dashboard/*"element={<ProtectedRoute><UserDash /></ProtectedRoute>} />
+          <Route path="/admin/*"element={<ProtectedRoute requiredRole="admin"><AdminDash /></ProtectedRoute>} />
+          <Route path="/dashboard/*"element={<ProtectedRoute requiredRole="seller"><UserDash /></ProtectedRoute>} />
         </Routes>
       </div>
     </Router>

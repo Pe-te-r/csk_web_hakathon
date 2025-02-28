@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: my-flask-app
+    name: flask-backend
     env: python
+    rootDir: back-end  # Specify that the backend is inside the backend folder
     buildCommand: pip install -r requirements.txt
     startCommand: ./start.sh
     envVars:

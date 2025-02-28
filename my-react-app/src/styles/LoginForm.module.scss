@@ -7,6 +7,10 @@
 }
 .imageContainer{
     width: 380px;
+    // flex:1;
+    display: flex;
+    justify-content: center;
+    // padding:2rem;
     img{
         width: 100%;
         height: auto;

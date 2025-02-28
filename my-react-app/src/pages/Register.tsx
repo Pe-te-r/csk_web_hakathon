@@ -63,7 +63,7 @@ const RegisterForm: React.FC = () => {
   return (
     <div className={styles.registerContainer}>
       <div className={styles.imageContainer}>
-        <img src="/src/assets/Login.jpeg" alt="Login" className={styles.image} />
+        <img src="https://i.pinimg.com/236x/57/c4/04/57c404cf7f5caa95dbd89379872095ff.jpg" alt="Login" className={styles.image} />
       </div>
 
       {/* Form on the right */}

@@ -44,7 +44,7 @@ class UserResource(Resource):
             if not user_exists.is_active():
                 return 'disabled',403
             
-            if user_exists.email != g.user and user_exists.get_role != 'admin':
+            if user_exists.email != g.user and g.user != 'admin@gmail.com': 
                 return 'not authorized'
 
 

@@ -1,14 +1,17 @@
 from flask import request, Blueprint
 from flask_restful import Api,Resource
 from App.Model import Order,OrderItem
+from App import jwt
 
 orders_bp=Blueprint('orders_bp',__name__)
 api=Api(orders_bp)
 
 class OrdersMuti(Resource):
+    method_decorators = [jwt.jwt_required]
     def get(self):
         try:
             orders = Order.getAll()
+            print(orders)
             if not orders:
                 return 'no order found',404
             
@@ -51,6 +54,7 @@ class OrdersMuti(Resource):
             return f"Error occurred: {str(e)}", 500
     
 class OrdersSingle(Resource):
+    method_decorators = [jwt.jwt_required]
     def delete(self,id):
         try:
             order = Order.get_by_id(id)

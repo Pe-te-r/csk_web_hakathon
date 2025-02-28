@@ -1,12 +1,14 @@
 from flask import request,  Blueprint
 from flask_restful import Api,Resource
 from App.Model import  Category
+from App import jwt
 
 category_bp = Blueprint('category_bp',__name__)
 
 api = Api(category_bp)
 
 class SingleCategory(Resource):
+    method_decorators={'put':[jwt.jwt_required],'delete':[jwt.jwt_required]}
     def get(self,id):
         try:
             subcategory = request.args.get('subcategory')                
@@ -53,11 +55,13 @@ class SingleCategory(Resource):
             return f'error occured {str(e)}',500
             
 class MultiCategory(Resource):
+    method_decorators={'post':[jwt.jwt_required]}
     def post(self):
         try:
+        
             if not request.is_json:
                 return "Content-type must be JSON", 400
-            
+             
             data = request.get_json()
             if 'category' not  in data:
                 return 'missing field category',400

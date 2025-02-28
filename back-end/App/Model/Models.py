@@ -144,6 +144,8 @@ class User(db.Model):
     @classmethod
     def create_user(cls,user):
         new_user=cls(id=uuid4(),first_name=user['first_name'],email=user['email'],username=user['username'])
+        if 'role' in user:
+            new_user.role=Role(user['role'])
         saved_password= Password.save_password({'id':new_user.id,'password':user['password']})
 
         db.session.add(new_user)
@@ -525,7 +527,7 @@ class Product(db.Model):
                 id=uuid4(),
                 sub_category_id=product["subcategory_id"],
                 product=product["productName"],
-                img_path=product["image"][0],
+                img_path=product["image"],
                 price=float(product["price"]),  # Ensure float conversion
                 description=product["description"],
                 owner=UUID(product['owner'])

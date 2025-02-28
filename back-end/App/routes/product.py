@@ -37,7 +37,7 @@ class MultiProduct(Resource):
                 return "Provide either an image file or an image URL, not both", 400
 
             if image:
-                img_url = get_img_url(image)
+                img_url = get_img_url(image)[0]
             else:
                 img_url = imageUrl
 
@@ -54,6 +54,7 @@ class MultiProduct(Resource):
                 "owner": owner
             }
 
+            print(product_data)
             result = Product.add_product(product_data)
             print(result)
             if not result:

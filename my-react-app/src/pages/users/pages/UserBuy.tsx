@@ -1,5 +1,7 @@
-import React from 'react';
-import styles from '../../../styles/UserBuy.module.scss'
+import React, { useEffect, useRef } from 'react';
+import styles from '../../../styles/UserBuy.module.scss';
+import { useSendOrderMutation } from '../../../api/order';
+import { useBasketStorage } from '../../../hooks/useBasketStorage';
 
 interface Product {
   product_id: string;
@@ -13,18 +15,50 @@ interface UserBuyProps {
     user_id: string;
     products: Product[];
   };
+  onClose: () => void;
 }
 
-const UserBuy: React.FC<UserBuyProps> = ({ data }) => {
+const UserBuy: React.FC<UserBuyProps> = ({ data, onClose }) => {
   const totalPrice = data.products.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const [createOrder, { isSuccess, error, isError, data: orderData }] = useSendOrderMutation();
+  const { clearBasket } = useBasketStorage();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleBuy = () => {
-    // Implement the buy logic here
+    const user_id = data.user_id;
+    const products = data.products.map((item) => ({
+      product_id: item.product_id,
+      quantity: item.quantity,
+    }));
+    createOrder({ user_id, products });
     console.log("Buying products:", data);
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(orderData);
+      clearBasket();
+      onClose();
+    }
+    if (isError) {
+      console.log(error);
+    }
+  }, [isSuccess, isError]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [modalRef]);
+
   return (
-    <div className={styles.userBuyContainer}>
+    <div className={styles.userBuyContainer} ref={modalRef}>
       <h2>Buy Products</h2>
       <table className={styles.productTable}>
         <thead>
@@ -51,6 +85,7 @@ const UserBuy: React.FC<UserBuyProps> = ({ data }) => {
         </tfoot>
       </table>
       <button onClick={handleBuy} className={styles.buyButton}>Buy</button>
+      <button onClick={onClose} className={styles.hideButton}>Hide</button>
     </div>
   );
 };

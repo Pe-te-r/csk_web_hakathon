@@ -2,29 +2,30 @@ import React, { useState } from 'react';
 import styles from "../styles/BasketModal.module.scss";
 import { useBasketStorage } from "../hooks/useBasketStorage";
 import { useUser } from "./context/UserProvider";
-import UserBuy from '../pages/users/pages/UserBuy'
+import UserBuy from '../pages/users/pages/UserBuy';
 
 interface BasketModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-interface ProductOrderDetails{
+
+interface ProductOrderDetails {
   product_id: string;
   price: number;
   quantity: number;
   product: string;
 }
 
-interface ProductOrderRequest{
-  user_id:string;
-  products:ProductOrderDetails[];
+interface ProductOrderRequest {
+  user_id: string;
+  products: ProductOrderDetails[];
 }
 
 const BasketModal: React.FC<BasketModalProps> = ({ isOpen, onClose }) => {
   const { basket, updateBasket, removeFromBasket, clearBasket } = useBasketStorage();
   const { getUser } = useUser();
   const [showBuyPage, setShowBuyPage] = useState(false);
-  const [buyData, setBuyData] = useState<ProductOrderRequest>({user_id:"",products:[]});
+  const [buyData, setBuyData] = useState<ProductOrderRequest>({ user_id: "", products: [] });
 
   if (!isOpen) return null;
   const totalPrice = basket.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -70,7 +71,7 @@ const BasketModal: React.FC<BasketModalProps> = ({ isOpen, onClose }) => {
   };
 
   if (showBuyPage && buyData) {
-    return <UserBuy data={buyData} />;
+    return <UserBuy data={buyData} onClose={() => setShowBuyPage(false)} />;
   }
 
   return (

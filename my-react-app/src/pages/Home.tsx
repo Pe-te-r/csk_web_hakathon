@@ -52,7 +52,7 @@ const HomePage = () => {
   useEffect(() => {
     if (isSuccess) {
         console.log(data)
-        saveUser(data.token,data.id)
+        saveUser(data.token,data.id,data.role)
       toast.success("Login successful");
     }
     if (isError && error) {
@@ -106,11 +106,28 @@ const HomePage = () => {
 
 }
           {/* Fallback button for small screens */}
-          {!getUser() &&
+          {!getUser()?
+          <div className={styles['btn-group']}>  
           <button className={styles['cta-button']} aria-label="Get Started" onClick={to_register}>
             Get Started
           </button>
+
+          <button className={styles['cta-button']} aria-label="Get Started" onClick={()=>navigate('/login')}>Login</button>
+          </div>
+            : getUser()?.role == 'seller' ?
+          <button className={styles['cta-button']} aria-label="Get Started" onClick={()=>navigate('/dashboard')}>
+            Seller Dashboard
+          </button>
+          : getUser()?.role == 'admin' ?
+          <button className={styles['cta-button']} aria-label="Get Started" onClick={()=>navigate('/admin')}>
+            Admin Dashboard
+          </button>:
+          <button className={styles['cta-button']} aria-label="Get Started" onClick={()=>navigate('/dashboard')}>
+            Seller Application
+          </button>
+
 }
+
             </div>
       </section>
 

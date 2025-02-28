@@ -14,7 +14,7 @@ def create_app(config_class=Config):
     
     db.init_app(app)
     Migrate(app,db)
-    CORS(app, supports_credentials=True)    
+    CORS(app, supports_credentials=True,origins='*')    
     jwt.init_app(app)
 
     from App.routes import register_bp

@@ -10,7 +10,7 @@ class InvalidTokenError(Exception):
 
 class JWTManager:
     def __init__(self, app=None):
-        # self.secret_key = "your_jwt_secret_key"
+        self.secret_key = "your_jwt_secret_key"
         self.algorithms = "HS256" 
         if app is not None:
             self.init_app(app)

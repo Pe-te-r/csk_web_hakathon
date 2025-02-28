@@ -53,25 +53,31 @@ class LoginResource(Resource):
             if not request.is_json:
                 return "Content-type must be JSON", 400
             data = request.get_json()
+            print(data)
             required_fields = ['email','password']
             for field in required_fields:
                 if field not in data:
                     return f'missing field {field}',400
             
             user = User.get_by_email(data['email'])
+            print('one')
             if not user:
                 return 'user not found',404
+            print('one')
             if not user.active:
                 return 'user blocked',403
             
+            print('two')
             if not user.correct_password(data['password']):
                 return 'wrong password',401
-            
+            print('five')
             token = jwt.create_access_token(user.email)
             
+            print('three')
             return {'token':token,'id':str(user.id)},200
 
         except Exception as e:
+            print(e)
             return  f"an error occured {str(e)}", 500        
 
 

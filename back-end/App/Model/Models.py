@@ -151,8 +151,13 @@ class User(db.Model):
         db.session.commit()
         return True
     
-    def correct_password(self,password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password.password)
+    def correct_password(self,user_password):
+        try:
+            print(self.password.password.encode())
+            return bcrypt.checkpw(user_password.encode(), self.password.password.encode())
+        except Exception as e:
+            print(e)
+            return False
 
 # authentication
 class Auth(db.Model):
@@ -381,12 +386,12 @@ class Password(db.Model):
     @classmethod
     def save_password(cls,data):
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-        password=cls(user_id=data['id'],password=hashed_password)
+        password=cls(user_id=data['id'],password=hashed_password.decode('utf-8'))
         return password
 
     def change_password(self,password):
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        self.password =hashed_password
+        self.password =hashed_password.decode('utf-8')
         db.session.add(self)
         db.session.commit()
         return True

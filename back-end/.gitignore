@@ -9,7 +9,7 @@ __pycache__/
 # Virtual Environment
 venv/
 .env
-*.env
+*
 
 # Flask instance & migrations (if using Flask-Migrate)
 instance/
